@@ -1,6 +1,6 @@
 
 ==============================
-TRIDIF versao 2.1 (24/10/2021)
+TRIDIF versao 2.1 (06/11/2021)
 ==============================
 
 Mariana Lima Garcia (marianalimagarcia@gmail.com)
@@ -15,4 +15,6 @@ Alexandre Vasconcelos Leite (alexandre.leite@ifrs.edu.br)
 Instituto Federal do Rio Grande do Sul (IFRS), campus Caxias do Sul
 Apoio tecnico
 
-
+-
+Download do projeto disponivel no repositorio publico do Github, em
+https://github.com/marianalimagarcia/TRIDIF
