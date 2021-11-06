@@ -422,7 +422,6 @@ ui <-
                                                          "Logístico de 1 parâmetro  (1PL)" = "1PL",
                                                          "Logístico de 2 parâmetros (2PL)" = "2PL",
                                                          "Logístico de 3 parâmetros (3PL)" = "3PL")),
-                                                         #"Logístico de 4 parâmetros (4PL)" = "4PL")),
                                               actionButton(inputId="uiMod_Dicot_btn_Ajustar",  label=" Ajustar e mostrar gráficos ")
                                  )
                           )
@@ -556,12 +555,12 @@ ui <-
                           column(width = 5,                    
                                  wellPanel(radioButtons(inputId="uiMod_Polit_rb_modelo", label="Modelo", selected="graded",
                                                         choices= 
-                                                                 c("Resposta gradual"               = "graded",   #"Samejima" = "graded"
-                                                                   "Crédito parcial"                = "Rasch",
-                                                                   "Crédito parcial generalizado"   = "gpcmIRT",
-                                                                   "Escala gradual"                 = "rsm"
+                                                                 c("Resposta gradual"             = "graded",   
+                                                                   "Crédito parcial"              = "Rasch",
+                                                                   "Crédito parcial generalizado" = "gpcmIRT",
+                                                                   "Escala gradual"               = "rsm"
                                                                  )),
-                                          actionButton(inputId="uiMod_Polit_btn_Ajustar",  label=" Ajustar e mostrar gráficos ")
+                                          actionButton(inputId="uiMod_Polit_btn_Ajustar", label=" Ajustar e mostrar gráficos ")
                                 )
                           )
                    ), #column 8    

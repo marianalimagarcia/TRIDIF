@@ -7,16 +7,10 @@ calculadescritivas = function(banco){
   }else{
     falta = sum(geral$missin[1,])
     tabfaltantes = as.data.frame(geral$missin)
-  #  tabfaltantes[2,] = round(tabfaltantes[2,]*100, digits = 1)
-    tabfaltantes[2,] = round(tabfaltantes[2,], digits = 1)  # assim fica correto o calculo do %
+    tabfaltantes[2,] = round(tabfaltantes[2,], digits = 1)  
   }
   
-# Problemas de codificação me fizeram tirar isso daqui. 
-# Agora tem uma constante em funcoes.R que é tratada no server.R com esses argumentos
-#  textoIni = paste("O banco de dados contém ", geral$sample[1], " questões e ",geral$sample[2],
-#                   " respondentes. Apresentando ", falta , " valores faltantes.")
   paramParaTexto = list(geral$sample[1],geral$sample[2], falta)
-#-------------------------------------------------------------------------  
 
   propresp = as.data.frame(geral$perc)
   propresp = round(propresp, digits = 3)
@@ -52,8 +46,6 @@ verificaunidimen = function(banco){
   else{ paramParaTexto = list(matrizcorrelacao, tiporesposta, propexp[1]," nao ", "menor") }
   return(paramParaTexto)
   
-  #colocar referencia no final
-  #MCHORNEY, Colleen A.; COHEN, Allan S. Equating health status measures with item response theory: illustrations with functional status items. Medical care, p. II43-II59, 2000.
 }
 
 
@@ -248,8 +240,6 @@ verificadifcumlogit = function(banco, grupo, tipodifcumlogit, correcaodifcumlogi
     nomesitens = colnames(banco)
     Mens = str_glue(TEXTO_SIM_DIFLOG, ITENS=paste(itensdif, collapse = ","))
     coefsdata = coef(resultado, SE = TRUE, simplify = TRUE)
-    #coefsdata = cbind(coefsdata[, grepl("a", colnames(coefsdata))],
-    #                  coefsdata[, !grepl("a", colnames(coefsdata))])
     coefs = coefsdata[c(TRUE, FALSE), ]
     ses = coefsdata[c(FALSE, TRUE), ]
     tabelacoefs =  cbind(coefs, ses)[, order(c(seq(ncol(coefs)), seq(ncol(ses))))]
@@ -493,7 +483,6 @@ plotcurvasgerais = function(modelo, nomex = PLOTCURVASGERAIS_X,   nomey = PLOTCU
            yaxis = list(title=nomey,  showgrid=T, zeroline=F, mirror=T),
            showlegend = TRUE)
   
-  #  saida = list(ccimodelo, ciimodelo)
   saida = list(NULL,ciimodelo, ciimodelosave)
 }
 

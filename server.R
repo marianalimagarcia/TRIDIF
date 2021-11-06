@@ -171,9 +171,9 @@ server <- function(input, output, session) {
     if (GLOBAL_Dados$tipo == "N") {
       hideTab(inputId = "tabsNavBar", target = "Análises descritivas")
       hideTab(inputId = "tabsNavBar", target = "Unidimensionalidade")
-      hideTab(inputId = "tabsNavBar", target = "Ajuste do modelo")   # dicotomico
+      hideTab(inputId = "tabsNavBar", target = "Ajuste do modelo")    # dicotomico
       hideTab(inputId = "tabsNavBar", target = "Presença de DIF")     # dicotomico
-      hideTab(inputId = "tabsNavBar", target = "Ajuste do modelo ")  # politomico A DIFERENÇA É UM ESPAÇO NO FINAL
+      hideTab(inputId = "tabsNavBar", target = "Ajuste do modelo ")   # politomico A DIFERENÇA É UM ESPAÇO NO FINAL
       hideTab(inputId = "tabsNavBar", target = "Presença de DIF ")    # politomico A DIFERENÇA É UM ESPAÇO NO FINAL
       hideTab(inputId = "tabsNavBar", target = "Exportação de dados")
     }
@@ -182,15 +182,15 @@ server <- function(input, output, session) {
       showTab(inputId = "tabsNavBar", target = "Unidimensionalidade")
       showTab(inputId = "tabsNavBar", target = "Exportação de dados")
       if (GLOBAL_Dados$tipo == "D") { 
-        showTab(inputId = "tabsNavBar", target = "Ajuste do modelo")   # dicotomico
+        showTab(inputId = "tabsNavBar", target = "Ajuste do modelo")    # dicotomico
         showTab(inputId = "tabsNavBar", target = "Presença de DIF")     # dicotomico
-        hideTab(inputId = "tabsNavBar", target = "Ajuste do modelo ")  # politomico A DIFERENÇA É UM ESPAÇO NO FINAL
+        hideTab(inputId = "tabsNavBar", target = "Ajuste do modelo ")   # politomico A DIFERENÇA É UM ESPAÇO NO FINAL
         hideTab(inputId = "tabsNavBar", target = "Presença de DIF ")    # politomico A DIFERENÇA É UM ESPAÇO NO FINAL
       }
       if (GLOBAL_Dados$tipo == "P") {
-        hideTab(inputId = "tabsNavBar", target = "Ajuste do modelo")   # dicotomico
+        hideTab(inputId = "tabsNavBar", target = "Ajuste do modelo")    # dicotomico
         hideTab(inputId = "tabsNavBar", target = "Presença de DIF")     # dicotomico
-        showTab(inputId = "tabsNavBar", target = "Ajuste do modelo ")  # politomico A DIFERENÇA É UM ESPAÇO NO FINAL
+        showTab(inputId = "tabsNavBar", target = "Ajuste do modelo ")   # politomico A DIFERENÇA É UM ESPAÇO NO FINAL
         showTab(inputId = "tabsNavBar", target = "Presença de DIF ")    # politomico A DIFERENÇA É UM ESPAÇO NO FINAL
       }
     }
@@ -708,9 +708,8 @@ server <- function(input, output, session) {
     if (input$uiMod_Dicot_rb_modelo=="1PL")   modeloDicot="Logístico de 1 parâmetro  (1PL)"
     if (input$uiMod_Dicot_rb_modelo=="2PL")   modeloDicot="Logístico de 2 parâmetros (2PL)"
     if (input$uiMod_Dicot_rb_modelo=="3PL")   modeloDicot="Logístico de 3 parâmetros (3PL)"
-    if (input$uiMod_Dicot_rb_modelo=="4PL")   modeloDicot="Logístico de 4 parâmetros (4PL)"
     #
-    if (input$uiMod_Polit_rb_modelo=="graded")  modeloPolit="Politômico ordinal de resposta gradual (graded)" #"Politômico ordinal de Samejima (graded)"
+    if (input$uiMod_Polit_rb_modelo=="graded")  modeloPolit="Politômico ordinal de resposta gradual (graded)" 
     if (input$uiMod_Polit_rb_modelo=="rsm")     modeloPolit="Escala gradual (rsm)"
     if (input$uiMod_Polit_rb_modelo=="Rasch")   modeloPolit="Crédito parcial (Rasch)"
     if (input$uiMod_Polit_rb_modelo=="gpcmIRT") modeloPolit="Crédito parcial generalizado (gpcmIRT)"
