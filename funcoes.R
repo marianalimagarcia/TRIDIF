@@ -227,7 +227,7 @@ verificadifcumlogit = function(banco, grupo, tipodifcumlogit, correcaodifcumlogi
   if (modelo == "C") tipoModelo = "cumulative"
   
   resultado = difORD(banco, group=grupo, focal.name = 1, model = tipoModelo, type = tipodifcumlogit,
-                     p.adjust.method = correcaodifcumlogit, parametrization = "classic")
+                     match = "score", p.adjust.method = correcaodifcumlogit, parametrization = "classic")
   
   itensdif = resultado$DIFitems
   if(itensdif[1]=="No DIF item detected"){
@@ -363,9 +363,10 @@ tabulacoefitens = function(modelo, nomesitens, tipomatriz, categ, cod_modelo){
   if(tipomatriz == "dicot"){
     colnames(tabela)[1:8] = paste0(
       c("", "EP("),
-      paste0(rep(c("a", "b", "c", "d"), each = 2)),
+      paste0(rep(c("D.a", "b", "c", "d"), each = 2)),
       c("", ")")
     )
+    tabela = tabela[,1:6]
   }else{
     
     if (cod_modelo == "rsm") {
@@ -383,7 +384,7 @@ tabulacoefitens = function(modelo, nomesitens, tipomatriz, categ, cod_modelo){
     }
 
     if (cod_modelo == "gpcmIRT") {
-      nomes = c("a")
+      nomes = c("D.a")
       for(i in 1:(numcatred-1)){ nomes = c(nomes, paste("b",i, sep = "")) }
       dimcoef = 2*numcatred
       colnames(tabela)[1:dimcoef] = paste0(
@@ -395,7 +396,7 @@ tabulacoefitens = function(modelo, nomesitens, tipomatriz, categ, cod_modelo){
     }
     
     if (cod_modelo == "graded") {
-      nomes = c("a")
+      nomes = c("D.a")
       for(i in 1:(numcatred-1)){ nomes = c(nomes, paste("b",i, sep = "")) }
       dimcoef = 2*numcatred
       colnames(tabela)[1:dimcoef] = paste0(
@@ -851,11 +852,11 @@ considerarDados <- function(DF) {
     # coluna grupo no Dicot tem o mesmo tratamento que uma coluna normal
     for (col in 1:ncol(DF)) {
       
-      cont = data.frame(table(DF[,col]))  # Retorna 'Var1' e 'Freq'
-      ind0 = match(0,cont$Var1) # indice do valor 0
-      ind1 = match(1,cont$Var1) # indice do valor 1
+      cont   = data.frame(table(DF[,col]))  # Retorna 'Var1' e 'Freq'
+      ind0   = match(0,cont$Var1) # indice do valor 0
+      ind1   = match(1,cont$Var1) # indice do valor 1
       nomeCol = colnames(DF)[col]
-      
+
       temErro = F
       
       # verifica se tem 0 e 1 na coluna 'col'
@@ -868,11 +869,13 @@ considerarDados <- function(DF) {
          DFe= rbind(DFe,data.frame(col=nomeCol,desc=str_glue(tipoErros$erro[2],C=nomeCol)))
          temErro = T
       }
-      else
+      else {
       # verifica se tem outros valores diferentes de 0 e 1
-      if (cont$Freq[ind0]+cont$Freq[ind1] != nrow(DF)) {
+      soma = cont$Freq[ind0] + cont$Freq[ind1] + sum(is.na(DF[,col]))
+      if (soma != nrow(DF)) {
          DFe= rbind(DFe,data.frame(col=nomeCol,desc=str_glue(tipoErros$erro[3],C=nomeCol)))
          temErro = T
+      }
       }
       
       # retira a coluna bugada

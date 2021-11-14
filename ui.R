@@ -75,7 +75,7 @@ ui <-
             
             column(width = 8, 
                    p(style=DIV_MENSAGEM, "Itens que serão considerados nas análises"),
-                   aceEditor(outputId="uiEntrada_ace_dicot", value=ACE_EDITOR_DADOS_DEFAULT, readOnly=T, height="200px")),
+                   aceEditor(outputId="uiEntrada_ace_dicot", value=ACE_EDITOR_DADOS_DEFAULT, readOnly=F, height="200px")),
             column(width = 4, 
                    p(style=DIV_MENSAGEM, "Itens que NÃO serão considerados nas análises"),
                    div(style=DIV_FONT, htmlOutput("uiEntrada_txt_Texto")))

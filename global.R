@@ -237,7 +237,7 @@ NOME_ARQ_EXPORTACAO    = "www/codigos-R/codigo-exportacao.R"
 VERIFICA_DIF_LOG_X           = "Traco Latente"
 VERIFICA_DIF_LOG_Y           = "Probabilidade"
 VERIFICA_DIF_LORD_X          = "Traco Latente"
-VERIFICA_DIF_LORD_Y          = "Probabilidade de acerto"
+VERIFICA_DIF_LORD_Y          = "Probabilidade"
 VERIFICA_DIF_CUMLOGIT_X      = "Traco Latente"
 VERIFICA_DIF_CUMLOGIT_Y      = "Probabilidade"
 
@@ -323,26 +323,27 @@ AJUDA_DESC_ALFA <- function(){
 # aba presença de DIF
 AJUDA_DICOT_DIF_LOG_TAB <- function(){
   wp <- wellPanel(
-    p("Para a detecção de funcionamento diferencial do item (dif) são ajustados os seguintes modelos de regressão logística:"),
+    p("Para a detecção de funcionamento diferencial do item (DIF) são ajustados os seguintes modelos de regressão logística:"),
     tags$ul(
       tags$li("Modelo 1: sem considerar a variável grupo, supondo que não haja a 
-              presença de dif."), 
-      tags$li("Modelo 2: considerando a variável grupo, supondo a presença de dif
+              presença de DIF."), 
+      tags$li("Modelo 2: considerando a variável grupo, supondo a presença de DIF
               uniforme."),
-      tags$li("Modelo 3: considerando a interação entre grupo e traço latente, 
-              supondo a presença de dif não uniforme."), 
-      tags$li("Modelo 4: considerando a variável grupo e a interação entre grupo
-              e traço latente, supondo a presença de ambos tipos de difs.")
+      tags$li("Modelo 3: considerando a variável grupo e a interação entre grupo
+              e traço latente, supondo a presença de ambos tipos de DIFs.")
     ),
-    p("De acordo com o tipo de dif escolhido na interface, um dos modelos com 
-      mais variáveis (2,3 ou 4) é testado contra o modelo reduzido (1). O resultado 
-      do teste dirá se o item possui ou não aquele tipo de dif."),
+    p("Com os modelos ajustados, realiza-se um teste de razão de verossimilhança para compará-los. 
+    Se o tipo de DIF a ser identificado é o uniforme, a diferença entre os modelos 1 e 2 é 
+    comparada com uma distribuição qui-quadrado com um grau de liberdade. Se o tipo de DIF a ser
+    identificado é o não uniforme, essa mesma comparação é feita para a diferença entre os 
+    modelos 2 e 3. Caso a identificação seja para ambos tipos de DIF, a diferença entre os 
+    modelos 1 e 3 é comparada com uma distribuição qui-quadrado com dois graus de liberdade. 
+    O resultado do teste diz se o item possui ou não aquele tipo de DIF. "),
     p("Os nomes e significados das colunas desta tabela são:"),
     tags$ul(
-      tags$li(strong("Est Qui:"),"Estatística do teste de razão de verossimilhança 
-              feito entre os dois modelos."),
+      tags$li(strong("Est Qui:"),"Estatística do teste de razão de verossimilhança"),
       tags$li(strong("p-valor:"),"Valor p correspondente a estatística de teste apresentada na 
-              coluna anterior. Que são ajustados de acordo com o método de correção para 
+              coluna anterior. Essa coluna é ajustada de acordo com o método de correção para 
               comparações múltiplas escolido na interface (Nenhum, Benjamini-Hochberg, 
               Benjamini-Yekutieli, Bonferroni, Holm, Hochberg, Hommel)."),
       tags$li(strong("deltaR2:"),"Diferença entre as estatísticas R² de Nagelkerke dos modelos aninhados,
@@ -352,10 +353,10 @@ AJUDA_DICOT_DIF_LOG_TAB <- function(){
       tags$li(strong("EP(b0), EP(b1), EP(b2), EP(b3):"),"erros padrão dos coeficientes ajustados 
               do melhor modelo (entre os dois modelos testados) para cada item.")
     ),
-    p("Abaixo vemos a tabela de detecção para ambos tipos de difs (Modelo 4), 
+    p("Abaixo vemos a tabela de detecção para ambos tipos de DIFs (Modelo 3), 
       para os 10 primeiros itens de um teste. Os itens destacados são os que apresentam 
       funcionamento diferencial, ou seja, são melhor representados pelo modelo mais 
-      completo (4), e assim, apresentam todos os coeficientes (b0, b1, b2 e b3)."),
+      completo (3), e assim, apresentam todos os coeficientes (b0, b1, b2 e b3)."),
     br(),
     img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/dif_logistic.png")
   )
@@ -367,11 +368,11 @@ AJUDA_DICOT_DIF_LOG_GRAF <- function(){
     fluidRow(
       column(6,
              br(),br(),
-             p("Gráficos com as curvas características dos itens com dif considerando 
-          os grupos Referência (linha contínua) e Focal (linha tracejada). 
-          O eixo y traz a probabilidade de acerto de cada grupo no item. 
-          No eixo x estão os possíveis escores dos candidatos. 
-          No exemplo da imagem, o teste possui 20 itens, então, o eixo x vai de 0 a 20.")
+             p("Gráficos com as curvas de resposta dos itens com DIF considerando 
+             os grupos Referência (linha contínua) e Focal (linha tracejada).
+             O eixo y traz a probabilidade de acerto ou resposta afirmativa de cada grupo no item. 
+             No eixo x estão os possíveis escores totais dos candidatos. 
+             No exemplo da imagem, o teste possui 20 itens, então, o eixo x vai de 0 a 20.")
       ),
       column(6, 
              img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/dif_logistic_graf.png")
@@ -383,15 +384,15 @@ AJUDA_DICOT_DIF_LOG_GRAF <- function(){
 
 AJUDA_DICOT_DIF_LORD_TAB <- function(){
   wp <- wellPanel(
-    p("Para a detecção de funcionamento diferencial do item (dif) são ajustados dois modelos TRI com 
+    p("Para a detecção de funcionamento diferencial do item (DIF) são ajustados dois modelos TRI com 
       o número de coeficientes selecionados na interface, um para o grupo Referência e outro para o grupo Focal. 
-      Após os coeficientes dos modelos são comparados através do teste de Lord. Este método permite detectar dif 
+      Após os coeficientes dos modelos são comparados através do teste de Lord. Este método permite detectar DIF 
       uniformes ou não uniformes."),
     p("Os nomes e significados das colunas desta tabela são:"),
     tags$ul(
-      tags$li(strong("Lord Qui:"),"Estatística do teste de Lord."),
+      tags$li(strong("Lord Qui:"),"Estatística qui-quadrado de Lord."),
       tags$li(strong("p-valor:"),"Valor p correspondente a estatística de teste apresentada na 
-              coluna anterior. Que são ajustados de acordo com o método de correção para 
+              coluna anterior. Essa coluna é ajustada de acordo com o método de correção para 
               comparações múltiplas escolido na interface (Nenhum, Benjamini-Hochberg, 
               Benjamini-Yekutieli, Bonferroni, Holm, Hochberg, Hommel)."),
       tags$li(strong("aR, bR:"),"coeficientes do modelo ajustado para o grupo Referência."),
@@ -404,7 +405,8 @@ AJUDA_DICOT_DIF_LORD_TAB <- function(){
     ),
     p("Abaixo vemos a tabela de detecção para um modelo 2PL, 
     dos 10 primeiros itens de um teste. Os itens destacados são os que apresentam 
-    funcionamento diferencial, ou seja, possuem diferença significativa entre os cpeficientes dos modelos Referência e Focal."),
+    funcionamento diferencial, ou seja, possuem diferença significativa entre os coeficientes 
+      dos modelos Referência e Focal."),
     br(),
     img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/dif_lord.png")
   )
@@ -416,9 +418,9 @@ AJUDA_DICOT_DIF_LORD_GRAF <- function(){
     fluidRow(
       column(6,
              br(),br(),
-             p("Gráficos com as curvas características dos itens com dif considerando 
+             p("Gráficos com as curvas de resposta dos itens com DIF considerando  
           os grupos Referência (linha contínua) e Focal (linha tracejada). 
-          O eixo y traz a probabilidade de acerto de cada grupo no item. 
+          O eixo y traz a probabilidade de acerto ou resposta afirmativa de cada grupo no item. 
           No eixo x estão os escores Tri dos candidatos.")
       ),
       column(6, 
@@ -432,42 +434,41 @@ AJUDA_DICOT_DIF_LORD_GRAF <- function(){
 #--
 AJUDA_POLIT_DIF_LOGIT_C_TAB <- function(){
   wp <- wellPanel(
-    p("Para a detecção de funcionamento diferencial do item (dif) são ajustados os seguintes modelos logitos cumulativos:"),
+    p("Para a detecção de funcionamento diferencial do item (DIF) são ajustados os seguintes
+      modelos Logitos Cumulativos:"),
     tags$ul(
       tags$li("Modelo 1: sem considerar a variável grupo, supondo que não haja a 
-              presença de dif."), 
-      tags$li("Modelo 2: considerando a variável grupo, supondo a presença de dif
+              presença de DIF."), 
+      tags$li("Modelo 2: considerando a variável grupo, supondo a presença de DIF
               uniforme."),
-      tags$li("Modelo 3: considerando a interação entre grupo e traço latente, 
-              supondo a presença de dif não uniforme."), 
-      tags$li("Modelo 4: considerando a variável grupo e a interação entre grupo
-              e traço latente, supondo a presença de ambos tipos de difs.")
+      tags$li("Modelo 3: considerando a variável grupo e a interação entre grupo
+              e traço latente, supondo a presença de ambos tipos de DIFs.")
     ),
-    p("De acordo com o tipo de dif escolhido na interface, um dos modelos com 
-      mais variáveis (2,3 ou 4) é testado contra o modelo reduzido (1). O resultado 
-      do teste dirá se o item possui ou não aquele tipo de dif."),
-    p("Os nomes e significados das colunas desta tabela são:"),
+    p("Com os modelos ajustados, realiza-se um teste de razão de verossimilhança para compará-los. 
+    Se o tipo de DIF a ser identificado é o uniforme, a diferença entre os modelos 1 e 2 é 
+    comparada com uma distribuição qui-quadrado com um grau de liberdade. Se o tipo de DIF a ser
+    identificado é o não uniforme, essa mesma comparação é feita para a diferença entre os 
+    modelos 2 e 3. Caso a identificação seja para ambos tipos de DIF, a diferença entre os 
+    modelos 1 e 3 é comparada com uma distribuição qui-quadrado com dois graus de liberdade. 
+    O resultado do teste diz se o item possui ou não aquele tipo de DIF. "),
+    p("Considerando um item com",em("(m+1)"),"categorias, os nomes e significados das colunas desta tabela são:"),
     tags$ul(
-      tags$li(strong("Est Qui:"),"Estatística do teste de razão de verossimilhança 
-              feito entre os dois modelos."),
+      tags$li(strong("Est Qui:"),"Estatística do teste de razão de verossimilhança"),
       tags$li(strong("p-valor:"),"Valor p correspondente a estatística de teste apresentada na 
-              coluna anterior. Que são ajustados de acordo com o método de correção para 
+              coluna anterior. Essa coluna é ajustada de acordo com o método de correção para 
               comparações múltiplas escolido na interface (Nenhum, Benjamini-Hochberg, 
               Benjamini-Yekutieli, Bonferroni, Holm, Hochberg, Hommel)."),
-      tags$li(strong("a, b1, b2, b3, ..., b(n-1):"),"coeficientes ajustados do modelo reduzido para cada item. 
-              Como é um modelo politômico, o número desses coeficientes variam de acordo com o número 
-              de categorias dos itens (n)."),
-      tags$li(strong("EP(a), EP(b1), EP(b2), EP(b3), ..., EP(bn):"),"erros padrão dos coeficientes ajustados 
-              do modelo reduzido para cada item."),
-      tags$li(strong("aDif, b1Dif, b2Dif, b3Dif, ..., b(n-1)Dif:"),"coeficientes ajustados do modelo com Dif para cada item."),
-      tags$li(strong("EP(aDif), EP(b1Dif), EP(b2Dif), EP(b3Dif), ..., EP(bnDif):"),"erros padrão dos coeficientes ajustados 
-              do modelo com Dif para cada item."),
+      tags$li(strong("b01, ..., b0m:"),"são os",em("m"), "interceptos de categoria do item, a primeira
+      categoria não recebe um intercepto."),
+      tags$li(strong("EP(b01), ..., EP(b0m):"),"erros padrão dos interceptos de categoria do item."),
+      tags$li(strong("b1, b2, b3:"),"demais parâmetros do modelo"),
+      tags$li(strong("EP(b1), EP(b2), EP(b3):"),"erros padrões dos demais parâmetros do modelo"),
     ),
-    p("Abaixo vemos a tabela de detecção para ambos tipos de difs (Modelo 4), 
+    p("Abaixo vemos a tabela de detecção para ambos tipos de DIFs (Modelo 3), 
       para os 10 primeiros itens de um teste com 4 categorias de resposta. 
       Os itens destacados são os que apresentam funcionamento diferencial, ou seja, 
-      são melhor representados pelo modelo mais completo (4), e assim, apresentam todos 
-      os coeficientes (a, b1, b2, b3, aDif, b1Dif, b2Dif, b3Dif)."),
+      são melhor representados pelo modelo mais completo (3), e assim, apresentam todos 
+      os coeficientes do modelo."),
     br(),
     img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/dif_cum_logit.png")
     
@@ -480,10 +481,11 @@ AJUDA_POLIT_DIF_LOGIT_C_GRAF <- function(){
     fluidRow(
       column(6,
              br(),br(),
-             p("Gráficos com as curvas características dos itens com dif para cada categoria de resposta
+             p("Gráficos com as curvas de resposta dos itens com DIF para cada categoria de resposta
              considerando os grupos Referência (linha contínua) e Focal (linha tracejada). O eixo y traz a 
              probabilidade do respondente de cada grupo selecionar cada uma das categorias do item.
-             No eixo x estão os escores Tri dos candidatos.")
+             No eixo x estão os escores totais dos candidatos. No exemplo da imagem, o teste possui 20 itens 
+             com categorias de 0 a 3, então, o eixo x vai de 0 a 60.")
       ),
       column(6, 
              img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/dif_cum_logit_graf.png")
@@ -495,42 +497,41 @@ AJUDA_POLIT_DIF_LOGIT_C_GRAF <- function(){
 
 AJUDA_POLIT_DIF_LOGIT_A_TAB <- function(){
   wp <- wellPanel(
-    p("Para a detecção de funcionamento diferencial do item (dif) são ajustados os seguintes modelos logitos de categorias adjacentes:"),
+    p("Para a detecção de funcionamento diferencial do item (DIF) são ajustados os seguintes
+      modelos Logitos de Categoria Adjacente:"),
     tags$ul(
       tags$li("Modelo 1: sem considerar a variável grupo, supondo que não haja a 
-              presença de dif."), 
-      tags$li("Modelo 2: considerando a variável grupo, supondo a presença de dif
+              presença de DIF."), 
+      tags$li("Modelo 2: considerando a variável grupo, supondo a presença de DIF
               uniforme."),
-      tags$li("Modelo 3: considerando a interação entre grupo e traço latente, 
-              supondo a presença de dif não uniforme."), 
-      tags$li("Modelo 4: considerando a variável grupo e a interação entre grupo
-              e traço latente, supondo a presença de ambos tipos de difs.")
+      tags$li("Modelo 3: considerando a variável grupo e a interação entre grupo
+              e traço latente, supondo a presença de ambos tipos de DIFs.")
     ),
-    p("De acordo com o tipo de dif escolhido na interface, um dos modelos com 
-      mais variáveis (2,3 ou 4) é testado contra o modelo reduzido (1). O resultado 
-      do teste dirá se o item possui ou não aquele tipo de dif."),
-    p("Os nomes e significados das colunas desta tabela são:"),
+    p("Com os modelos ajustados, realiza-se um teste de razão de verossimilhança para compará-los. 
+    Se o tipo de DIF a ser identificado é o uniforme, a diferença entre os modelos 1 e 2 é 
+    comparada com uma distribuição qui-quadrado com um grau de liberdade. Se o tipo de DIF a ser
+    identificado é o não uniforme, essa mesma comparação é feita para a diferença entre os 
+    modelos 2 e 3. Caso a identificação seja para ambos tipos de DIF, a diferença entre os 
+    modelos 1 e 3 é comparada com uma distribuição qui-quadrado com dois graus de liberdade. 
+    O resultado do teste diz se o item possui ou não aquele tipo de DIF. "),
+    p("Considerando um item com",em("(m+1)"),"categorias, os nomes e significados das colunas desta tabela são:"),
     tags$ul(
-      tags$li(strong("Est Qui:"),"Estatística do teste de razão de verossimilhança 
-              feito entre os dois modelos."),
+      tags$li(strong("Est Qui:"),"Estatística do teste de razão de verossimilhança"),
       tags$li(strong("p-valor:"),"Valor p correspondente a estatística de teste apresentada na 
-              coluna anterior. Que são ajustados de acordo com o método de correção para 
+              coluna anterior. Essa coluna é ajustada de acordo com o método de correção para 
               comparações múltiplas escolido na interface (Nenhum, Benjamini-Hochberg, 
               Benjamini-Yekutieli, Bonferroni, Holm, Hochberg, Hommel)."),
-      tags$li(strong("a, b1, b2, b3, ..., b(n-1):"),"coeficientes ajustados do modelo reduzido para cada item. 
-              Como é um modelo politômico, o número desses coeficientes variam de acordo com o número 
-              de categorias dos itens (n)."),
-      tags$li(strong("EP(a), EP(b1), EP(b2), EP(b3), ..., EP(bn):"),"erros padrão dos coeficientes ajustados 
-              do modelo reduzido para cada item."),
-      tags$li(strong("aDif, b1Dif, b2Dif, b3Dif, ..., b(n-1)Dif:"),"coeficientes ajustados do modelo com Dif para cada item."),
-      tags$li(strong("EP(aDif), EP(b1Dif), EP(b2Dif), EP(b3Dif), ..., EP(bnDif):"),"erros padrão dos coeficientes ajustados 
-              do modelo com Dif para cada item."),
+      tags$li(strong("b01, ..., b0m:"),"são os",em("m"), "interceptos de categoria do item, a primeira
+      categoria não recebe um intercepto."),
+      tags$li(strong("EP(b01), ..., EP(b0m):"),"erros padrão dos interceptos de categoria do item."),
+      tags$li(strong("b1, b2, b3:"),"demais parâmetros do modelo"),
+      tags$li(strong("EP(b1), EP(b2), EP(b3):"),"erros padrões dos demais parâmetros do modelo"),
     ),
-    p("Abaixo vemos a tabela de detecção para ambos tipos de difs (Modelo 4), 
+    p("Abaixo vemos a tabela de detecção para ambos tipos de DIFs (Modelo 3), 
       para os 10 primeiros itens de um teste com 4 categorias de resposta. 
       Os itens destacados são os que apresentam funcionamento diferencial, ou seja, 
-      são melhor representados pelo modelo mais completo (4), e assim, apresentam todos 
-      os coeficientes (a, b1, b2, b3, aDif, b1Dif, b2Dif, b3Dif)."),
+      são melhor representados pelo modelo mais completo (3), e assim, apresentam todos 
+      os coeficientes do modelo."),
     br(),
     img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/dif_adj_logit.png")
   )
@@ -542,10 +543,11 @@ AJUDA_POLIT_DIF_LOGIT_A_GRAF <- function(){
     fluidRow(
       column(6,
              br(),br(),
-             p("Gráficos com as curvas características dos itens com dif para cada categoria de resposta
+             p("Gráficos com as curvas de resposta dos itens com DIF para cada categoria de resposta
              considerando os grupos Referência (linha contínua) e Focal (linha tracejada). O eixo y traz a 
              probabilidade do respondente de cada grupo selecionar cada uma das categorias do item.
-             No eixo x estão os escores Tri dos candidatos.")
+             No eixo x estão os escores totais dos candidatos. No exemplo da imagem, o teste possui 20 itens 
+             com categorias de 0 a 3, então, o eixo x vai de 0 a 60.")
       ),
       column(6, 
              img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/dif_adj_logit_graf.png")
@@ -631,8 +633,8 @@ AJUDA_DICOT_COEF <- function(){
     p("Esta tabela traz os coeficientes ajustados para cada item"),
     p("Os nomes e significados das colunas são:"),
     tags$ul(
-      tags$li(strong("a, b, c, d:"),"coeficientes ajustados do modelo para cada item."),
-      tags$li(strong("EP(a), EP(b), EP(c), EP(d):"),"erros padrão dos coeficientes ajustados 
+      tags$li(strong("D.a, b, c:"),"coeficientes ajustados do modelo para cada item."),
+      tags$li(strong("EP(D.a), EP(b), EP(c):"),"erros padrão dos coeficientes ajustados 
               do modelo para cada item.")
     ),
     p("Abaixo vemos a tabela dos coeficientes para os 10 primeiros itens de um modelo 
@@ -649,7 +651,7 @@ AJUDA_DICOT_CCI <- function(){
       column(6,
              p("Curvas características dos itens todas em um mesmo gráfico.
              O eixo x traz o escore Tri dos respondentes.
-             O eixo y a probabilidade de acerto no item."),
+             O eixo y a probabilidade de acerto ou resposta afirmativa no item."),
              p("Para esconder/mostrar itens, clique uma vez sobre o item na área da legenda. 
                Um duplo clique sobre um item esconde os demais, mostrando apenas ele."),
              p("A imagem ao lado mostra apenas as curvas características dos itens 2 e 5 de um modelo 
@@ -689,7 +691,7 @@ AJUDA_DICOT_CCI_MOS <- function(){
       column(6,
              p("Curvas características dos itens.
              O eixo x traz o escore Tri dos respondentes.
-             O eixo y a probabilidade de acerto no item."),
+             O eixo y a probabilidade de acerto ou resposta afirmativa no item."),
              p("A imagem ao lado mostra a curva característica de um item de um modelo dicotômico.")
       ),
       column(6, 
@@ -755,11 +757,11 @@ AJUDA_POLIT_CIT <- function(){
 AJUDA_POLIT_COEF <- function(){
   wp <- wellPanel(
     p("Esta tabela traz os coeficientes ajustados para cada item. Esses coeficientes mudam de acordo com 
-    o modelo selecionado na interface e com o número de categorias dos itens (m)."),
+    o modelo selecionado na interface e com o número de categorias dos itens (mi+1)."),
     p("Os nomes e significados das colunas são:"),
     tags$ul(
-      tags$li(strong("a, b1, b2,..., bm-1, b, d1, d2,..., dm-1:"),"coeficientes ajustados do modelo para cada item."),
-      tags$li(strong("EP(a), EP(b1), EP(b2), ..., EP(bm-1), EP(b), EP(d1), EP(d2), ..., EP(dm-1):"),"erros padrão dos coeficientes ajustados 
+      tags$li(strong("D.a, b1, ..., bmi, d1, ..., dmi, b:"),"Coeficientes ajustados do modelo para cada item."),
+      tags$li(strong("EP(D.a), EP(b1), ..., EP(bmi), EP(d1),  ..., EP(dmi), EP(b):"),"erros padrão dos coeficientes ajustados 
               do modelo para cada item.")
     ),
     p("Abaixo vemos a tabela dos coeficientes para os 10 primeiros itens de um modelo 
@@ -808,14 +810,13 @@ AJUDA_POLIT_CII_T <- function(){
   wp <- wellPanel(
     fluidRow(
       column(6,
-             p("REVISAR!!!!!!!! 
-             Curvas de informação dos itens.
+             p("Curvas de informação total dos itens.
              O eixo x traz o escore Tri dos respondentes.
-             O eixo y a informação de cada categoria do item."),
-             p("A imagem ao lado mostra a curva de informação de um item de um modelo politômico.")
+             O eixo y a informação total de cada item."),
+             p("A imagem ao lado mostra a curva de informação total de um item de um modelo politômico.")
       ),
       column(6, 
-             img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/cii_mosaico_polit.png")
+             img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/ciit_mosaico_polit.png")
       )
     )
   )
@@ -827,14 +828,16 @@ AJUDA_POLIT_CII_T_TODOS <- function(){
   wp <- wellPanel(
     fluidRow(
       column(6,
-             p("REVISAR AQUI TAMBEM!!!!!!!! 
-             Curvas de informação dos itens.
-             O eixo x traz o escore Tri dos respondentes.
-             O eixo y a informação de cada categoria do item."),
-             p("A imagem ao lado mostra a curva de informação de um item de um modelo politômico.")
+             p("Curvas de informação  total dos itens em um mesmo gráfico.
+               O eixo x traz o escore Tri dos respondentes. 
+               O eixo y a informação total do item."),
+             p("Para esconder/mostrar itens, clique uma vez sobre o item na área da legenda. 
+               Um duplo clique sobre um item esconde os demais, mostrando apenas ele."),
+             p("A imagem ao lado mostra apenas as curvas de informação total dos itens 2 e 6 de um modelo 
+               politômico, para facilitar a comparação entre elas.")
       ),
       column(6, 
-             img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/cii_mosaico_polit.png")
+             img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/cii_juntas_polit.png")
       )
     )
   )
