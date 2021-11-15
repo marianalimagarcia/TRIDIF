@@ -68,7 +68,7 @@ plot(resultado, plot = "itemCurve", item = 6)
 ###Dif Politomica Logit Cumulativo###
 #####################################
 library(difNLR)
-resultado = difORD(matriz, group=grupo, focal.name = 1, model = "cumulative", type = "both", p.adjust.method = "none")
+resultado = difORD(matriz, group=grupo, focal.name = 1, model = "cumulative", type = "both", match = "score", p.adjust.method = "none", parametrization = "classic")
 #ajuste dos itens
 resultado
 coef(resultado, SE = TRUE, simplify = TRUE)
@@ -79,7 +79,7 @@ plot(resultado, item = 6)
 ###Dif Politomica Categoria Adjacente###
 ########################################
 library(difNLR)
-resultado = difORD(matriz, group=grupo, focal.name = 1, model = "adjacent", type = "both", p.adjust.method = "none")
+resultado = difORD(matriz, group=grupo, focal.name = 1, model = "adjacent", type = "both", match = "score", p.adjust.method = "none", parametrization = "classic")
 #ajuste dos itens
 resultado
 coef(resultado, SE = TRUE, simplify = TRUE)

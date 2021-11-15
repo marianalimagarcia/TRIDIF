@@ -1,6 +1,6 @@
 library(difNLR)
 
-resultado = difORD(matriz, group=grupo, focal.name = 1, model = "adjacent", type = "both", p.adjust.method = "none")
+resultado = difORD(matriz, group=grupo, focal.name = 1, model = "adjacent", type = "both", match = "score", p.adjust.method = "none", parametrization = "classic")
 
 #ajuste dos itens
 resultado
