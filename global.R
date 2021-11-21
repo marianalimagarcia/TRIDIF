@@ -180,8 +180,8 @@ GLOBAL_Dados <- reactiveValues(tipo="D", temGrupo=T)  # é "D" de dicotomico da 
 MENS_ALERTA_CARREGAR_DICOT = "Os dados da matriz serão substituídos por dados 'dicotômicos' de exemplo. Confirma?"
 MENS_ALERTA_CARREGAR_POLIT = "Os dados da matriz serão substituídos por dados 'politômicos' de exemplo. Confirma?"
 MENS_ALERTA_LIMPAR         = "Os dados da matriz serão removidos. Confirma?"
-MENS_BOTAODOWNLOAD = "Use o 'download plot as a PNG' da barra de ferramentas do gráfico"
-
+#MENS_BOTAODOWNLOAD = "Use o 'download plot as a PNG' da barra de ferramentas do gráfico"
+MENS_BOTAODOWNLOAD = "Para download do gráfico, passe o mouse sobre a imagem e pressione a máquina fotográfica ('download plot as a png') que aparece no topo da figura"
 
 # textos colocados na ui.R de acordo com o server.R
 TEXTO_DESCRITIVAS = "O banco de dados contém { NQ } questões e { NR } respondentes. Apresentando { NF } valores faltantes."

@@ -702,10 +702,7 @@ ui <-
                                                       textInput     (inputId="uiExpGraf_txt_Hist_Y",      label="Eixo Y", value=PLOTDISTHABILIDADADES_HIST_Y),
                                                       actionButton  (inputId="uiExpGraf_btn_Hist_Aplicar",label=" Redesenhar ", icon=icon("columns")),
                                                       actionButton  (inputId="uiExpGraf_btn_Hist_Padrao", label=" Restaurar " , icon=icon("home")),
-                                                      tags$div(style=ESTILO_BOTAODOWNLOAD, title=MENS_BOTAODOWNLOAD,
-                                                               downloadButton("uiExpGraf_btn_HIST_png",label=" Download "))))
-                                      
-                                      
+                                                      div(style=DIV_MENSAGEM, MENS_BOTAODOWNLOAD)))
                                   ) #box
                           ),
                           tabPanel("Boxplot"," ",
@@ -716,8 +713,7 @@ ui <-
                                                        textInput     (inputId="uiExpGraf_txt_Box_X",label="Eixo X",value=PLOTDISTHABILIDADADES_BOX_X),
                                                        actionButton  (inputId="uiExpGraf_btn_Box_Aplicar",label=" Redesenhar ", icon=icon("columns")),
                                                        actionButton  (inputId="uiExpGraf_btn_Box_Padrao", label=" Restaurar " , icon=icon("home")),
-                                                       tags$div(style=ESTILO_BOTAODOWNLOAD, title=MENS_BOTAODOWNLOAD,
-                                                                downloadButton("uiExpGraf_btn_BOX_png", label=" Download "))))
+                                                       div(style=DIV_MENSAGEM, MENS_BOTAODOWNLOAD)))
                                   ) #box
                           ),
                           tabPanel("Curva de informação do modelo"," ",
@@ -731,8 +727,7 @@ ui <-
                                                        textInput     (inputId="uiExpGraf_txt_cit_s1",     label=paste0("Nome da série '",PLOTCURVASGERAIS_S1,"'"), value=PLOTCURVASGERAIS_S1),
                                                        actionButton  (inputId="uiExpGraf_btn_cit_Aplicar",label=" Redesenhar ", icon=icon("columns")),
                                                        actionButton  (inputId="uiExpGraf_btn_cit_Padrao" ,label=" Restaurar  ", icon=icon("home")),
-                                                       tags$div(style=ESTILO_BOTAODOWNLOAD, title=MENS_BOTAODOWNLOAD,
-                                                                downloadButton("uiExpGraf_btn_CIT_png",label=" Download "))))
+                                                       div(style=DIV_MENSAGEM, MENS_BOTAODOWNLOAD)))
                                    ) #box
                           ),
                           tabPanel("Curva característica do item"," ",  # DICOT
@@ -744,8 +739,7 @@ ui <-
                                                         textInput     (inputId="uiExpGraf_txt_cciunica_Y",      label="Eixo Y", value=PLOTCURVASITENSDICOT_CCI_Y),
                                                         actionButton  (inputId="uiExpGraf_btn_cciunica_Aplicar",label=" Redesenhar ", icon=icon("columns")),
                                                         actionButton  (inputId="uiExpGraf_btn_cciunica_Padrao", label=" Restaurar " , icon=icon("home")),
-                                                        tags$div(style=ESTILO_BOTAODOWNLOAD, title=MENS_BOTAODOWNLOAD,
-                                                                 downloadButton("uiExpGraf_btn_CCIUNICA_png",label=" Download "))))
+                                                        div(style=DIV_MENSAGEM, MENS_BOTAODOWNLOAD)))
                                    ), #box
 
                                    box(title=" ", width="100%",
@@ -757,9 +751,8 @@ ui <-
                                                         textInput     (inputId="uiExpGraf_txt_cci_Y_dicot",      label="Eixo Y", value=PLOTCURVASITENSDICOT_CCI_Y),
                                                         actionButton  (inputId="uiExpGraf_btn_cci_Aplicar_dicot",label=" Redesenhar ", icon=icon("columns")),
                                                         actionButton  (inputId="uiExpGraf_btn_cci_Padrao_dicot", label=" Restaurar " , icon=icon("home")),
-                                                        tags$div(style=ESTILO_BOTAODOWNLOAD, title=MENS_BOTAODOWNLOAD,
-                                                                 downloadButton("uiExpGraf_btn_CCI_png_dicot",label=" Download "))))
-                                    ) #box
+                                                        div(style=DIV_MENSAGEM, MENS_BOTAODOWNLOAD)))
+                                   ) #box
                           ),
                           tabPanel("Curva característica do item "," ",  # POLIT (tem um espaço ao final do titulo)
                                    box(title=" ", width="100%",
@@ -771,8 +764,7 @@ ui <-
                                                         textInput     (inputId="uiExpGraf_txt_cci_Y_polit",      label="Eixo Y", value=PLOTCURVASITENSDICOT_CCI_Y),
                                                         actionButton  (inputId="uiExpGraf_btn_cci_Aplicar_polit",label=" Redesenhar ", icon=icon("columns")),
                                                         actionButton  (inputId="uiExpGraf_btn_cci_Padrao_polit", label=" Restaurar " , icon=icon("home")),
-                                                        tags$div(style=ESTILO_BOTAODOWNLOAD, title=MENS_BOTAODOWNLOAD,
-                                                                 downloadButton("uiExpGraf_btn_CCI_png_polit",label=" Download "))))
+                                                        div(style=DIV_MENSAGEM, MENS_BOTAODOWNLOAD)))
                                    ) #box
                           ),
                           
@@ -785,8 +777,7 @@ ui <-
                                                        textInput     (inputId="uiExpGraf_txt_ciiunica_Y",      label="Eixo Y", value=PLOTCURVASITENSDICOT_CII_Y),
                                                        actionButton  (inputId="uiExpGraf_btn_ciiunica_Aplicar",label=" Redesenhar ", icon=icon("columns")),
                                                        actionButton  (inputId="uiExpGraf_btn_ciiunica_Padrao", label=" Restaurar " , icon=icon("home")),
-                                                       tags$div(style=ESTILO_BOTAODOWNLOAD, title=MENS_BOTAODOWNLOAD,
-                                                                downloadButton("uiExpGraf_btn_CIIUNICA_png",label=" Download "))))
+                                                       div(style=DIV_MENSAGEM, MENS_BOTAODOWNLOAD)))
                                   ), #box
                                             
                                   box(title="", width="100%",
@@ -798,8 +789,7 @@ ui <-
                                                       textInput     (inputId="uiExpGraf_txt_cii_Y_dicot",      label="Eixo Y", value=PLOTCURVASITENSDICOT_CII_Y),
                                                       actionButton  (inputId="uiExpGraf_btn_cii_Aplicar_dicot",label=" Redesenhar ", icon=icon("columns")),
                                                       actionButton  (inputId="uiExpGraf_btn_cii_Padrao_dicot", label=" Restaurar " , icon=icon("home")),
-                                                      tags$div(style=ESTILO_BOTAODOWNLOAD, title=MENS_BOTAODOWNLOAD,
-                                                               downloadButton("uiExpGraf_btn_CII_png_dicot",label=" Download "))))
+                                                      div(style=DIV_MENSAGEM, MENS_BOTAODOWNLOAD)))
                                   ) #box
                           ),
                           
@@ -813,8 +803,7 @@ ui <-
                                                         textInput     (inputId="uiExpGraf_txt_ciiunica_polit_Y",      label="Eixo Y", value=PLOTCURVASITENSPOLIT_CII_Y),
                                                         actionButton  (inputId="uiExpGraf_btn_ciiunica_polit_Aplicar",label=" Redesenhar ", icon=icon("columns")),
                                                         actionButton  (inputId="uiExpGraf_btn_ciiunica_polit_Padrao", label=" Restaurar " , icon=icon("home")),
-                                                        tags$div(style=ESTILO_BOTAODOWNLOAD, title=MENS_BOTAODOWNLOAD,
-                                                                 downloadButton("uiExpGraf_btn_CIIUNICA_polit_png",label=" Download "))))
+                                                        div(style=DIV_MENSAGEM, MENS_BOTAODOWNLOAD)))
                                    ), #box
                                    
                                    box(title="", width="100%",
@@ -826,8 +815,7 @@ ui <-
                                                         textInput     (inputId="uiExpGraf_txt_cii_t_Y_polit",      label="Eixo Y", value=PLOTCURVASITENSPOLIT_CII_Y),
                                                         actionButton  (inputId="uiExpGraf_btn_cii_t_Aplicar_polit",label=" Redesenhar ", icon=icon("columns")),
                                                         actionButton  (inputId="uiExpGraf_btn_cii_t_Padrao_polit", label=" Restaurar " , icon=icon("home")),
-                                                        tags$div(style=ESTILO_BOTAODOWNLOAD, title=MENS_BOTAODOWNLOAD,
-                                                                 downloadButton("uiExpGraf_btn_CII_t_png_polit",label=" Download "))))
+                                                        div(style=DIV_MENSAGEM, MENS_BOTAODOWNLOAD)))
                                    ), #box
                                    
                                    box(title="", width="100%",
@@ -839,8 +827,7 @@ ui <-
                                                         textInput     (inputId="uiExpGraf_txt_cii_Y_polit",      label="Eixo Y", value=PLOTCURVASITENSDICOT_CII_Y),
                                                         actionButton  (inputId="uiExpGraf_btn_cii_Aplicar_polit",label=" Redesenhar ", icon=icon("columns")),
                                                         actionButton  (inputId="uiExpGraf_btn_cii_Padrao_polit", label=" Restaurar " , icon=icon("home")),
-                                                        tags$div(style=ESTILO_BOTAODOWNLOAD, title=MENS_BOTAODOWNLOAD,
-                                                                 downloadButton("uiExpGraf_btn_CII_png_polit",label=" Download "))))
+                                                        div(style=DIV_MENSAGEM, MENS_BOTAODOWNLOAD)))
                                    ) #box
                                    
                                    
