@@ -1,6 +1,6 @@
 
 ==============================
-TRIDIF versao 2.1 (06/11/2021)
+TRIDIF versao 2.2 (04/12/2021)
 ==============================
 
 Mariana Lima Garcia (marianalimagarcia@gmail.com)

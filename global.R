@@ -24,6 +24,7 @@ library(TH.data)
 library(conquer)
 library(matrixStats)
 library(multcomp)
+library(xlsx)
 
 source("funcoes.R")
 
@@ -69,6 +70,7 @@ DIV_FONT        = 'font-family:"Courier",Georgia,Serif'
 DIV_DICOT       = 'color:blue; font-family:"Courier",Georgia,Serif'
 DIV_DATATABLE   = 'overflow-x: scroll; font-family:"Courier",Georgia,Serif'
 DIV_MENSAGEM    = paste0("color:",COR_MENSAGEM,"")
+DIV_SUPOSICAO   = 'color:red; font-size: 18px'
 
 # estilos
 ESTILO_BODY_LOGO   = paste0("{ background-color: ",COR_FUNDO_GERAL,"; 
@@ -180,8 +182,8 @@ GLOBAL_Dados <- reactiveValues(tipo="D", temGrupo=T)  # é "D" de dicotomico da 
 MENS_ALERTA_CARREGAR_DICOT = "Os dados da matriz serão substituídos por dados 'dicotômicos' de exemplo. Confirma?"
 MENS_ALERTA_CARREGAR_POLIT = "Os dados da matriz serão substituídos por dados 'politômicos' de exemplo. Confirma?"
 MENS_ALERTA_LIMPAR         = "Os dados da matriz serão removidos. Confirma?"
-#MENS_BOTAODOWNLOAD = "Use o 'download plot as a PNG' da barra de ferramentas do gráfico"
-MENS_BOTAODOWNLOAD = "Para download do gráfico, passe o mouse sobre a imagem e pressione a máquina fotográfica ('download plot as a png') que aparece no topo da figura"
+MENS_BOTAODOWNLOAD      = "Para download do gráfico, passe o mouse sobre a imagem e pressione a máquina fotográfica ('download plot as a png') que aparece no topo da figura"
+MENS_BOTAODOWNLOAD_XLSX = "Download XLSX dos traços latentes e dos coeficientes estimados dos itens"
 
 # textos colocados na ui.R de acordo com o server.R
 TEXTO_DESCRITIVAS = "O banco de dados contém { NQ } questões e { NR } respondentes. Apresentando { NF } valores faltantes."
@@ -191,8 +193,8 @@ TEXTO_UNI = paste("Para verificar a unidimensionalidade dos dados, aqui é reali
                   "o primeiro fator explica { PERC }% da variabilidade dos dados. Segundo ",
                   "MCHORNEY & COHEN (2000), a suposição de unidimensionalidade suficiente { NAO } está atendida ",
                   "(pois este valor é {MAIOR} que 20%). Logo os modelos unidimensionais cumulativos da TRI podem ser utilizados.")
-TEXTO_SIM_DIFLOG = "Foram detectados os seguintes itens com funcionamento diferencial: {ITENS} "
-TEXTO_NAO_DIFLOG = "Não foram detectados itens com funcionamento diferencial"
+TEXTO_SIM_DIFLOG = "{ITENS}"
+TEXTO_NAO_DIFLOG = "Não foram detectados itens com funcionamento diferencial (DIF)"
 TEXTO_SEM_GRUPO  = "A base de dados não possui separação por grupo para esta análise"
 
 
@@ -202,8 +204,7 @@ DT_SEMPAGINACAO = list(bPaginate=FALSE, bFilter=FALSE, bInfo=FALSE, bSort=FALSE)
 
 
 # nomes externos arquivos exportados
-ARQ_EXP_CALC_DADOS     = "TRIDIF-ajustes-dados.csv" 
-ARQ_EXP_CALC_ITENS     = "TRIDIF-ajustes-itens.csv" 
+ARQ_EXP_CALC_XLSX      = "TRIDIF-ajustes-resultados.xlsx" 
 ARQ_EXP_CALC_HIST_PNG  = "TRIDIF-ajustes-histograma.PNG" 
 ARQ_EXP_CALC_HIST_PDF  = "TRIDIF-ajustes-histograma.PDF" 
 ARQ_EXP_CALC_BOX_PNG   = "TRIDIF-ajustes-box.PNG" 
@@ -232,33 +233,49 @@ NOME_ARQ_CALC_DICOT    = "www/codigos-R/codigo-calc-dicot.R"
 NOME_ARQ_CALC_POLIT    = "www/codigos-R/codigo-calc-polit.R"
 NOME_ARQ_EXPORTACAO    = "www/codigos-R/codigo-exportacao.R"
 
+# Demais constantes
+DADOS_DICOTOMICOS = "dicotômicos"
+DADOS_POLITOMICOS = "politômicos"
+DADOS_INDEFINIDO  = "indefinido"
+
+VERIFICA_UNID_TETRACORICA = "tetracórica"
+VERIFICA_UNID_DICOT       = "dicotômicas binárias"
+VERIFICA_UNID_POLICORICA  = "policórica"
+VERIFICA_UNID_DICOT       = "politômicas ordinais"
+
+PLOT_FOCAL      = "Focal"
+PLOT_REFERENCIA = "Referência"
 
 # Nomes dos eixos dos graficos
-VERIFICA_DIF_LOG_X           = "Traco Latente"
+VERIFICA_UNID_X = "Fatores"
+VERIFICA_UNID_Y = "Proporção da variabilidade explicada"
+VERIFICA_HOVER  = "Proporção"
+
+VERIFICA_DIF_LOG_X           = "Traço Latente"
 VERIFICA_DIF_LOG_Y           = "Probabilidade"
-VERIFICA_DIF_LORD_X          = "Traco Latente"
+VERIFICA_DIF_LORD_X          = "Traço Latente"
 VERIFICA_DIF_LORD_Y          = "Probabilidade"
-VERIFICA_DIF_CUMLOGIT_X      = "Traco Latente"
+VERIFICA_DIF_CUMLOGIT_X      = "Traço Latente"
 VERIFICA_DIF_CUMLOGIT_Y      = "Probabilidade"
 
-PLOTDISTHABILIDADADES_HIST_X = "Traco latente"   
+PLOTDISTHABILIDADADES_HIST_X = "Traço latente"   
 PLOTDISTHABILIDADADES_HIST_Y = "Frequencia"
-PLOTDISTHABILIDADADES_BOX_X  = "Traco latente"   
+PLOTDISTHABILIDADADES_BOX_X  = "Traço latente"   
 
-PLOTCURVASITENSDICOT_CCI_X   = "Traco Latente"
+PLOTCURVASITENSDICOT_CCI_X   = "Traço Latente"
 PLOTCURVASITENSDICOT_CCI_Y   = "Probabilidade"
-PLOTCURVASITENSDICOT_CII_X   = "Traco Latente"
-PLOTCURVASITENSDICOT_CII_Y   = "Informacao"
+PLOTCURVASITENSDICOT_CII_X   = "Traço Latente"
+PLOTCURVASITENSDICOT_CII_Y   = "Informação"
 
-PLOTCURVASGERAIS_X           = "Traco Latente"
-PLOTCURVASGERAIS_Y           = "Informacao/Erro padrao"
-PLOTCURVASGERAIS_S1          = "Informacao"
-PLOTCURVASGERAIS_S2          = "Erro Padrao"
+PLOTCURVASGERAIS_X           = "Traço Latente"
+PLOTCURVASGERAIS_Y           = "Informação/Erro padrão"
+PLOTCURVASGERAIS_S1          = "Informação"
+PLOTCURVASGERAIS_S2          = "Erro Padrão"
 
-PLOTCURVASITENSPOLIT_CCI_X   = "Traco Latente"
+PLOTCURVASITENSPOLIT_CCI_X   = "Traço Latente"
 PLOTCURVASITENSPOLIT_CCI_Y   = "Probabilidade"
-PLOTCURVASITENSPOLIT_CII_X   = "Traco Latente"
-PLOTCURVASITENSPOLIT_CII_Y   = "Informacao"
+PLOTCURVASITENSPOLIT_CII_X   = "Traço Latente"
+PLOTCURVASITENSPOLIT_CII_Y   = "Informação"
 
 
 
@@ -269,19 +286,11 @@ PLOTCURVASITENSPOLIT_CII_Y   = "Informacao"
 # aba análise descritiva
 AJUDA_DESC_FALT <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
-             br(),
-             br(),
              p("Esta tabela traz a frequência de valores faltantes", em("missing"),
                "de cada item e o percentual que esta frequência representa."),
-             p("Por exemplo, na figura ao lado temos que o item ", strong("I1"),
-               "possui valor faltante em 15 dos 1000 respondentes, o que representa 1.5%")),
-      column(6, 
-             img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/faltantes.png")
-      )
-      
-    )
+             p("Por exemplo, na figura temos que o item ", strong("I1"),
+               "possui valor faltante em 15 dos 1000 respondentes, o que representa 1.5%"),
+             img(style=paste0(ESTILO_IMG, "width: 50%;"), src="imagens/faltantes.png")
   )
   return(wp)  
 }
@@ -289,19 +298,8 @@ AJUDA_DESC_FALT <- function(){
 AJUDA_DESC_RESP <- function(){
   wp <- wellPanel(
     p("Esta tabela mostra a proporção de respostas em cada categoria no item."),
-    p("A figura abaixo mostra um exemplo em dados dicotômicos. No item",
-      strong("I2,"), "696 dos 1000 respondentes estão na categoria 0 (696/1000 = 0.696)
-    e 304 na categoria 1 (304/1000 = 0.304)"),
-    withMathJax(
-      "Em dados dicotômicos, esta tabela ainda traz o", em("logit"), "do item. 
-    No item", strong("I2,"),"\\( ln \\frac{0.304}{0.696} = -0.828 \\)."),
     br(),
-    br(),
-    img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/proporcao_dicot.png"),
-    br(),
-    br(),
-    p("Em dados politômicos, apenas a proporção de respostas em cada categoria é apresentada."),
-    img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/proporcao_polit.png")
+    img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/proporcao_polit.png")
   )
   return(wp)
 }
@@ -315,7 +313,8 @@ AJUDA_DESC_ALFA <- function(){
     a exclusão daquele item."),
     p("No destaque da figura, o alfa do teste considerando todos os itens é 0.9 e, 
     recalculando o alfa considerando a exclusão de", strong("I2"), "este valor cai para 0.895."),
-    img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/alfa_cronbach.png")
+    br(),
+    img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/alfa_cronbach.png")
   )
   return(wp)
 } 
@@ -325,10 +324,8 @@ AJUDA_DICOT_DIF_LOG_TAB <- function(){
   wp <- wellPanel(
     p("Para a detecção de funcionamento diferencial do item (DIF) são ajustados os seguintes modelos de regressão logística:"),
     tags$ul(
-      tags$li("Modelo 1: sem considerar a variável grupo, supondo que não haja a 
-              presença de DIF."), 
-      tags$li("Modelo 2: considerando a variável grupo, supondo a presença de DIF
-              uniforme."),
+      tags$li("Modelo 1: sem considerar a variável grupo, supondo que não haja a presença de DIF."), 
+      tags$li("Modelo 2: considerando a variável grupo, supondo a presença de DIF uniforme."),
       tags$li("Modelo 3: considerando a variável grupo e a interação entre grupo
               e traço latente, supondo a presença de ambos tipos de DIFs.")
     ),
@@ -341,43 +338,37 @@ AJUDA_DICOT_DIF_LOG_TAB <- function(){
     O resultado do teste diz se o item possui ou não aquele tipo de DIF. "),
     p("Os nomes e significados das colunas desta tabela são:"),
     tags$ul(
-      tags$li(strong("Est Qui:"),"Estatística do teste de razão de verossimilhança"),
+      tags$li(strong("Est Qui:"),"Estatística do teste de razão de verossimilhança."),
       tags$li(strong("p-valor:"),"Valor p correspondente a estatística de teste apresentada na 
               coluna anterior. Essa coluna é ajustada de acordo com o método de correção para 
-              comparações múltiplas escolido na interface (Nenhum, Benjamini-Hochberg, 
+              comparações múltiplas escolhido na interface (Nenhum, Benjamini-Hochberg, 
               Benjamini-Yekutieli, Bonferroni, Holm, Hochberg, Hommel)."),
       tags$li(strong("deltaR2:"),"Diferença entre as estatísticas R² de Nagelkerke dos modelos aninhados,
               fornece uma medida de tamanho de efeito para a comparação dos dois modelos."),
-      tags$li(strong("b0, b1, b2 e b3:"),"coeficientes ajustados do melhor modelo 
+      tags$li(strong("b0, b1, b2 e b3:"),"coeficientes estimados do melhor modelo 
               (entre os dois modelos testados) para cada item."),
-      tags$li(strong("EP(b0), EP(b1), EP(b2), EP(b3):"),"erros padrão dos coeficientes ajustados 
+      tags$li(strong("EP(b0), EP(b1), EP(b2), EP(b3):"),"erros padrão dos coeficientes estimados 
               do melhor modelo (entre os dois modelos testados) para cada item.")
     ),
     p("Abaixo vemos a tabela de detecção para ambos tipos de DIFs (Modelo 3), 
       para os 10 primeiros itens de um teste. Os itens destacados são os que apresentam 
-      funcionamento diferencial, ou seja, são melhor representados pelo modelo mais 
+      funcionamento diferencial (DIF), ou seja, são melhor representados pelo modelo mais 
       completo (3), e assim, apresentam todos os coeficientes (b0, b1, b2 e b3)."),
     br(),
-    img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/dif_logistic.png")
+    img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/dif_logistic.png")
   )
   return(wp)
 }
 
 AJUDA_DICOT_DIF_LOG_GRAF <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
-             br(),br(),
              p("Gráficos com as curvas de resposta dos itens com DIF considerando 
              os grupos Referência (linha contínua) e Focal (linha tracejada).
              O eixo y traz a probabilidade de acerto ou resposta afirmativa de cada grupo no item. 
              No eixo x estão os possíveis escores totais dos candidatos. 
-             No exemplo da imagem, o teste possui 20 itens, então, o eixo x vai de 0 a 20.")
-      ),
-      column(6, 
-             img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/dif_logistic_graf.png")
-      )
-    )
+             No exemplo da imagem, o teste possui 20 itens, então, o eixo x vai de 0 a 20."),
+             br(),
+             img(style=paste0(ESTILO_IMG, "width: 50%;"), src="imagens/dif_logistic_graf.png")
   )
   return(wp)
 }
@@ -393,7 +384,7 @@ AJUDA_DICOT_DIF_LORD_TAB <- function(){
       tags$li(strong("Lord Qui:"),"Estatística qui-quadrado de Lord."),
       tags$li(strong("p-valor:"),"Valor p correspondente a estatística de teste apresentada na 
               coluna anterior. Essa coluna é ajustada de acordo com o método de correção para 
-              comparações múltiplas escolido na interface (Nenhum, Benjamini-Hochberg, 
+              comparações múltiplas escolhido na interface (Nenhum, Benjamini-Hochberg, 
               Benjamini-Yekutieli, Bonferroni, Holm, Hochberg, Hommel)."),
       tags$li(strong("aR, bR:"),"coeficientes do modelo ajustado para o grupo Referência."),
       tags$li(strong("EP(aR), EP(bR):"),"erros padrão dos coeficientes do modelo ajustado 
@@ -405,28 +396,22 @@ AJUDA_DICOT_DIF_LORD_TAB <- function(){
     ),
     p("Abaixo vemos a tabela de detecção para um modelo 2PL, 
     dos 10 primeiros itens de um teste. Os itens destacados são os que apresentam 
-    funcionamento diferencial, ou seja, possuem diferença significativa entre os coeficientes 
+    funcionamento diferencial (DIF), ou seja, possuem diferença significativa entre os coeficientes 
       dos modelos Referência e Focal."),
     br(),
-    img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/dif_lord.png")
+    img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/dif_lord.png")
   )
   return(wp)
 }  
 
 AJUDA_DICOT_DIF_LORD_GRAF <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
-             br(),br(),
-             p("Gráficos com as curvas de resposta dos itens com DIF considerando  
+          p("Gráficos com as curvas de resposta dos itens com funcionamento diferencial (DIF) considerando  
           os grupos Referência (linha contínua) e Focal (linha tracejada). 
           O eixo y traz a probabilidade de acerto ou resposta afirmativa de cada grupo no item. 
-          No eixo x estão os escores Tri dos candidatos.")
-      ),
-      column(6, 
-             img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/dif_lord_graf.png")
-      )
-    )
+          No eixo x estão os escores TRI dos candidatos."),
+          br(),
+          img(style=paste0(ESTILO_IMG, "width: 50%;"), src="imagens/dif_lord_graf.png")
   )
   return(wp)
 } 
@@ -456,7 +441,7 @@ AJUDA_POLIT_DIF_LOGIT_C_TAB <- function(){
       tags$li(strong("Est Qui:"),"Estatística do teste de razão de verossimilhança"),
       tags$li(strong("p-valor:"),"Valor p correspondente a estatística de teste apresentada na 
               coluna anterior. Essa coluna é ajustada de acordo com o método de correção para 
-              comparações múltiplas escolido na interface (Nenhum, Benjamini-Hochberg, 
+              comparações múltiplas escolhido na interface (Nenhum, Benjamini-Hochberg, 
               Benjamini-Yekutieli, Bonferroni, Holm, Hochberg, Hommel)."),
       tags$li(strong("b01, ..., b0m:"),"são os",em("m"), "interceptos de categoria do item, a primeira
       categoria não recebe um intercepto."),
@@ -466,11 +451,11 @@ AJUDA_POLIT_DIF_LOGIT_C_TAB <- function(){
     ),
     p("Abaixo vemos a tabela de detecção para ambos tipos de DIFs (Modelo 3), 
       para os 10 primeiros itens de um teste com 4 categorias de resposta. 
-      Os itens destacados são os que apresentam funcionamento diferencial, ou seja, 
+      Os itens destacados são os que apresentam funcionamento diferencial (DIF), ou seja, 
       são melhor representados pelo modelo mais completo (3), e assim, apresentam todos 
       os coeficientes do modelo."),
     br(),
-    img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/dif_cum_logit.png")
+    img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/dif_cum_logit.png")
     
   )
   return(wp)
@@ -478,19 +463,13 @@ AJUDA_POLIT_DIF_LOGIT_C_TAB <- function(){
 
 AJUDA_POLIT_DIF_LOGIT_C_GRAF <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
-             br(),br(),
-             p("Gráficos com as curvas de resposta dos itens com DIF para cada categoria de resposta
+             p("Gráficos com as curvas de resposta dos itens com funcionamento diferencial (DIF) para cada categoria de resposta
              considerando os grupos Referência (linha contínua) e Focal (linha tracejada). O eixo y traz a 
              probabilidade do respondente de cada grupo selecionar cada uma das categorias do item.
              No eixo x estão os escores totais dos candidatos. No exemplo da imagem, o teste possui 20 itens 
-             com categorias de 0 a 3, então, o eixo x vai de 0 a 60.")
-      ),
-      column(6, 
-             img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/dif_cum_logit_graf.png")
-      )
-    )
+             com categorias de 0 a 3, então, o eixo x vai de 0 a 60."),
+             br(),
+             img(style=paste0(ESTILO_IMG, "width: 50%;"), src="imagens/dif_cum_logit_graf.png")
   )
   return(wp)
 } 
@@ -519,7 +498,7 @@ AJUDA_POLIT_DIF_LOGIT_A_TAB <- function(){
       tags$li(strong("Est Qui:"),"Estatística do teste de razão de verossimilhança"),
       tags$li(strong("p-valor:"),"Valor p correspondente a estatística de teste apresentada na 
               coluna anterior. Essa coluna é ajustada de acordo com o método de correção para 
-              comparações múltiplas escolido na interface (Nenhum, Benjamini-Hochberg, 
+              comparações múltiplas escolhido na interface (Nenhum, Benjamini-Hochberg, 
               Benjamini-Yekutieli, Bonferroni, Holm, Hochberg, Hommel)."),
       tags$li(strong("b01, ..., b0m:"),"são os",em("m"), "interceptos de categoria do item, a primeira
       categoria não recebe um intercepto."),
@@ -529,30 +508,24 @@ AJUDA_POLIT_DIF_LOGIT_A_TAB <- function(){
     ),
     p("Abaixo vemos a tabela de detecção para ambos tipos de DIFs (Modelo 3), 
       para os 10 primeiros itens de um teste com 4 categorias de resposta. 
-      Os itens destacados são os que apresentam funcionamento diferencial, ou seja, 
+      Os itens destacados são os que apresentam funcionamento diferencial (DIF), ou seja, 
       são melhor representados pelo modelo mais completo (3), e assim, apresentam todos 
       os coeficientes do modelo."),
     br(),
-    img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/dif_adj_logit.png")
+    img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/dif_adj_logit.png")
   )
   return(wp)
 } 
 
 AJUDA_POLIT_DIF_LOGIT_A_GRAF <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
-             br(),br(),
-             p("Gráficos com as curvas de resposta dos itens com DIF para cada categoria de resposta
+             p("Gráficos com as curvas de resposta dos itens com funcionamento diferencial (DIF) para cada categoria de resposta
              considerando os grupos Referência (linha contínua) e Focal (linha tracejada). O eixo y traz a 
              probabilidade do respondente de cada grupo selecionar cada uma das categorias do item.
              No eixo x estão os escores totais dos candidatos. No exemplo da imagem, o teste possui 20 itens 
-             com categorias de 0 a 3, então, o eixo x vai de 0 a 60.")
-      ),
-      column(6, 
-             img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/dif_adj_logit_graf.png")
-      )
-    )
+             com categorias de 0 a 3, então, o eixo x vai de 0 a 60."),
+             br(),
+             img(style=paste0(ESTILO_IMG, "width: 50%;"), src="imagens/dif_adj_logit_graf.png")
   )
   return(wp)
 } 
@@ -560,7 +533,7 @@ AJUDA_POLIT_DIF_LOGIT_A_GRAF <- function(){
 # aba ajuste do modelo
 AJUDA_DICOT_HABIL <- function(){
   wp <- wellPanel(
-    p("Para estimar o Escore tri dos respondentes é ajustado o modelo selecionado na interface.
+    p("Para estimar o escore TRI dos respondentes é ajustado o modelo selecionado na interface.
       Tendo a opção de excluir itens para o ajuste deste modelo."),
     p("Os nomes e significados das colunas desta tabela são:"),
     tags$ul(
@@ -568,153 +541,115 @@ AJUDA_DICOT_HABIL <- function(){
       tags$li(strong("Escore Padronizado:"),"É o escore total padronizado para o respondente. 
               Ou seja, é o escore total do respondente, subtraido da média e dividido pelo desvio 
               padrão dos escores totais."),
-      tags$li(strong("Escore Tri:"),"Traço latente ajustado pelo modelo Tri para o respondente."),
-      tags$li(strong("EP(Escore Tri):"),"Erro padrão do Escore Tri do respondente.")
+      tags$li(strong("Escore TRI:"),"Traço latente estimado pelo modelo TRI para o respondente."),
+      tags$li(strong("EP(Escore TRI):"),"Erro padrão da estimativa do escore TRI do respondente.")
     ),
     p("Abaixo vemos a tabela dos traços latentes, para os 10 primeiros respondentes em um modelo 
       com dados dicotômicos."),
     br(),
-    img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/traco_latente_dicot.png")
+    img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/traco_latente_dicot.png")
   )
   return(wp)
 }
 
 AJUDA_DICOT_HIST  <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
-             br(),br(),
-             p("Histograma com os escores tri dos respondentes. O eixo x traz os escores 
+             p("Histograma com os escores TRI dos respondentes. O eixo x traz os escores 
              TRI divididos em intervalos e o eixo y mostra a frequência que estes intervalos
-             ocorrrem.")
-      ),
-      column(6, 
+             ocorrrem."),
+             br(),
              img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/histograma.png")
-      )
-    )
   )
   return(wp)
 }
 
 AJUDA_DICOT_BOX <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
-             br(),br(),
-             p("Boxplot com os escores tri dos respondentes. Traz a informação de mínimo, máximo, 
-               quartis e outliers (se houver) dos escores Tri.")
-      ),
-      column(6, 
+             p("Boxplot com os escores TRI dos respondentes. Traz a informação de mínimo, máximo, 
+               quartis e outliers (se houver) dos escores TRI."),
+             br(),
              img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/boxplot.png")
-      )
-    )
   )
   return(wp)
 }
 
 AJUDA_DICOT_CIT <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
-             br(),br(),
-             p("Curva de informação do teste junto a curva de erro padrão. No eixo x o escore Tri dos 
-               respondentes. No eixo y a informação ou erro padrão relativo àquele escore.")
-      ),
-      column(6, 
+             p("Curva de informação do teste junto a curva de erro padrão. No eixo x o escore TRI dos 
+               respondentes. No eixo y a informação ou erro padrão relativo àquele escore."),
+             br(),
              img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/infose.png")
-      )
-    )
   )
   return(wp)
 }
 
 AJUDA_DICOT_COEF <- function(){
   wp <- wellPanel(
-    p("Esta tabela traz os coeficientes ajustados para cada item"),
+    p("Esta tabela traz os coeficientes estimados para cada item"),
     p("Os nomes e significados das colunas são:"),
     tags$ul(
-      tags$li(strong("D.a, b, c:"),"coeficientes ajustados do modelo para cada item."),
-      tags$li(strong("EP(D.a), EP(b), EP(c):"),"erros padrão dos coeficientes ajustados 
-              do modelo para cada item.")
+      tags$li(strong("D.a, b, c:"),"coeficientes estimados pelo modelo para cada item."),
+      tags$li(strong("EP(D.a), EP(b), EP(c):"),"erros padrão dos coeficientes estimados 
+              pelo modelo para cada item.")
     ),
     p("Abaixo vemos a tabela dos coeficientes para os 10 primeiros itens de um modelo 
       2PL para dados dicotômicos."),
     br(),
-    img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/coef_item_dicot.png")
+    img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/coef_item_dicot.png")
   )
   return(wp)
 }
 
 AJUDA_DICOT_CCI <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
              p("Curvas características dos itens todas em um mesmo gráfico.
-             O eixo x traz o escore Tri dos respondentes.
+             O eixo x traz o escore TRI dos respondentes.
              O eixo y a probabilidade de acerto ou resposta afirmativa no item."),
              p("Para esconder/mostrar itens, clique uma vez sobre o item na área da legenda. 
                Um duplo clique sobre um item esconde os demais, mostrando apenas ele."),
-             p("A imagem ao lado mostra apenas as curvas características dos itens 2 e 5 de um modelo 
-             dicotômico, para facilitar a comparação entre elas.")
-      ),
-      column(6, 
+             p("A imagem mostra apenas as curvas características dos itens 2 e 5 de um modelo 
+             dicotômico, para facilitar a comparação entre elas."),
+             br(),
              img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/cci_juntas_dicot.png")
-      )
-    )
   )
   return(wp)
 }
 
 AJUDA_DICOT_CII <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
              p("Curvas de informação  dos itens todas em um mesmo gráfico.
-             O eixo x traz o escore Tri dos respondentes. 
+             O eixo x traz o escore TRI dos respondentes. 
              O eixo y a informação do item."),
              p("Para esconder/mostrar itens, clique uma vez sobre o item na área da legenda. 
                Um duplo clique sobre um item esconde os demais, mostrando apenas ele."),
-             p("A imagem ao lado mostra apenas as curvas de informação dos itens 2 e 5 de um modelo 
-             dicotômico, para facilitar a comparação entre elas.")
-      ),
-      column(6, 
+             p("A imagem mostra apenas as curvas de informação dos itens 2 e 5 de um modelo 
+             dicotômico, para facilitar a comparação entre elas."),
+             br(),
              img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/cii_juntas_dicot.png")
-      )
-    )
   )
   return(wp)
 }
 
 AJUDA_DICOT_CCI_MOS <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
              p("Curvas características dos itens.
-             O eixo x traz o escore Tri dos respondentes.
+             O eixo x traz o escore TRI dos respondentes.
              O eixo y a probabilidade de acerto ou resposta afirmativa no item."),
-             p("A imagem ao lado mostra a curva característica de um item de um modelo dicotômico.")
-      ),
-      column(6, 
+             p("A imagem mostra a curva característica de um item de um modelo dicotômico."),
+             br(),
              img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/cci_mosaico_dicot.png")
-      )
-    )
   )
   return(wp)
 }
 
 AJUDA_DICOT_CII_MOS <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
              p("Curvas de informação dos itens.
-             O eixo x traz o escore Tri dos respondentes.
+             O eixo x traz o escore TRI dos respondentes.
              O eixo y a informação do item."),
-             p("A imagem ao lado mostra a curva de informação de um item de um modelo dicotômico.")
-      ),
-      column(6, 
+             p("A imagem mostra a curva de informação de um item de um modelo dicotômico."),
+             br(),
              img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/cii_mosaico_dicot.png")
-      )
-    )
   )
   return(wp)
 }
@@ -723,7 +658,7 @@ AJUDA_DICOT_CII_MOS <- function(){
 
 AJUDA_POLIT_HABIL <- function(){
   wp <- wellPanel(
-    p("Para estimar o Escore tri dos respondentes é ajustado o modelo selecionado na interface.
+    p("Para estimar o escore TRI dos respondentes é ajustado o modelo selecionado na interface.
       Tendo a opção de excluir itens para o ajuste deste modelo."),
     p("Os nomes e significados das colunas desta tabela são:"),
     tags$ul(
@@ -731,13 +666,13 @@ AJUDA_POLIT_HABIL <- function(){
       tags$li(strong("Escore Padronizado:"),"É o escore total padronizado para o respondente. 
               Ou seja, é o escore total do respondente, subtraido da média e dividido pelo desvio 
               padrão dos escores totais."),
-      tags$li(strong("Escore Tri:"),"Traço latente ajustado pelo modelo Tri para o respondente."),
-      tags$li(strong("EP(Escore Tri):"),"Erro padrão do Escore Tri do respondente.")
+      tags$li(strong("Escore TRI:"),"Traço latente estimado pelo modelo TRI para o respondente."),
+      tags$li(strong("EP(Escore TRI):"),"Erro padrão da estimativa do escore TRI do respondente.")
     ),
     p("Abaixo vemos a tabela dos traços latentes, para os 10 primeiros respondentes em um modelo 
       com dados politômicos."),
     br(),
-    img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/traco_latente_polit.png")
+    img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/traco_latente_polit.png")
   )
   return(wp)
 }
@@ -756,69 +691,54 @@ AJUDA_POLIT_CIT <- function(){
 
 AJUDA_POLIT_COEF <- function(){
   wp <- wellPanel(
-    p("Esta tabela traz os coeficientes ajustados para cada item. Esses coeficientes mudam de acordo com 
+    p("Esta tabela traz os coeficientes estimados para cada item. Esses coeficientes mudam de acordo com 
     o modelo selecionado na interface e com o número de categorias dos itens (mi+1)."),
     p("Os nomes e significados das colunas são:"),
     tags$ul(
-      tags$li(strong("D.a, b1, ..., bmi, d1, ..., dmi, b:"),"Coeficientes ajustados do modelo para cada item."),
-      tags$li(strong("EP(D.a), EP(b1), ..., EP(bmi), EP(d1),  ..., EP(dmi), EP(b):"),"erros padrão dos coeficientes ajustados 
-              do modelo para cada item.")
+      tags$li(strong("D.a, b1, ..., bmi, d1, ..., dmi, b:"),"Coeficientes estimados pelo modelo para cada item."),
+      tags$li(strong("EP(D.a), EP(b1), ..., EP(bmi), EP(d1),  ..., EP(dmi), EP(b):"),"erros padrão dos coeficientes estimados 
+              pelo modelo para cada item.")
     ),
     p("Abaixo vemos a tabela dos coeficientes para os 10 primeiros itens de um modelo 
       de resposta gradual para dados politômicos com 4 categorias."),
     br(),
-    img(style=paste0(ESTILO_IMG, "width: 75%;"), src="imagens/coef_item_polit.png")
+    img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/coef_item_polit.png")
   )
   return(wp)
 }
 
 AJUDA_POLIT_CCI <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
              p("Curvas características dos itens.
-             O eixo x traz o escore Tri dos respondentes.
+             O eixo x traz o escore TRI dos respondentes.
              O eixo y a probabilidade de escolha de cada categoria do item."),
-             p("A imagem ao lado mostra a curva característica de um item de um modelo politômico.")
-      ),
-      column(6, 
+             p("A imagem mostra a curva característica de um item de um modelo politômico."),
+             br(),
              img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/cci_mosaico_polit.png")
-      )
-    )
   )
   return(wp)
 }
 
 AJUDA_POLIT_CII <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
              p("Curvas de informação dos itens.
-             O eixo x traz o escore Tri dos respondentes.
+             O eixo x traz o escore TRI dos respondentes.
              O eixo y a informação de cada categoria do item."),
-             p("A imagem ao lado mostra a curva de informação de um item de um modelo politômico.")
-      ),
-      column(6, 
+             p("A imagem mostra a curva de informação de um item de um modelo politômico."),
+             br(),
              img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/cii_mosaico_polit.png")
-      )
-    )
   )
   return(wp)
 }
 
 AJUDA_POLIT_CII_T <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
              p("Curvas de informação total dos itens.
-             O eixo x traz o escore Tri dos respondentes.
+             O eixo x traz o escore TRI dos respondentes.
              O eixo y a informação total de cada item."),
-             p("A imagem ao lado mostra a curva de informação total de um item de um modelo politômico.")
-      ),
-      column(6, 
+             p("A imagem mostra a curva de informação total de um item de um modelo politômico."),
+             br(),
              img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/ciit_mosaico_polit.png")
-      )
-    )
   )
   return(wp)
 }
@@ -826,22 +746,16 @@ AJUDA_POLIT_CII_T <- function(){
 
 AJUDA_POLIT_CII_T_TODOS <- function(){
   wp <- wellPanel(
-    fluidRow(
-      column(6,
              p("Curvas de informação  total dos itens em um mesmo gráfico.
-               O eixo x traz o escore Tri dos respondentes. 
+               O eixo x traz o escore TRI dos respondentes. 
                O eixo y a informação total do item."),
              p("Para esconder/mostrar itens, clique uma vez sobre o item na área da legenda. 
                Um duplo clique sobre um item esconde os demais, mostrando apenas ele."),
-             p("A imagem ao lado mostra apenas as curvas de informação total dos itens 2 e 6 de um modelo 
-               politômico, para facilitar a comparação entre elas.")
-      ),
-      column(6, 
+             p("A imagem mostra apenas as curvas de informação total dos itens 2 e 6 de um modelo 
+               politômico, para facilitar a comparação entre elas."),
+             br(),
              img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/cii_juntas_polit.png")
-      )
-    )
   )
   return(wp)
 }
-
 

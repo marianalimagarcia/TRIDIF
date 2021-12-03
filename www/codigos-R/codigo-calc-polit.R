@@ -1,6 +1,6 @@
 library(mirt)
 
-modelo = mirt(matriz, model = 1, itemtype = "graded", SE = TRUE, verbose = FALSE)
+modelo = mirt(matriz, model = 1, itemtype = '{MODELO}', SE = TRUE, verbose = FALSE)
 
 #escore acertos
 rowSums(matriz, na.rm = T)

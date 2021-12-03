@@ -1,6 +1,6 @@
 library(difR)
 
-resultado = difLord(matriz, group=grupo, focal.name = 1, model = "2PL", p.adjust.method = "none")
+resultado = difLord(matriz, group=grupo, focal.name = 1, model = '{MODELO}', p.adjust.method = '{METODO}')
 
 #ajuste dos itens 
 resultado

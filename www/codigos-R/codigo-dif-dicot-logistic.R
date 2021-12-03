@@ -1,6 +1,6 @@
 library(difR)
 
-resultado = difLogistic(matriz, group=grupo, focal.name = 1, type = "both", p.adjust.method = "none")
+resultado = difLogistic(matriz, group=grupo, focal.name = 1, type = '{TYPE}', p.adjust.method = '{METODO}')
 
 #ajuste dos itens 
 resultado

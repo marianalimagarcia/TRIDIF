@@ -15,6 +15,8 @@ calculadescritivas = function(banco){
   propresp = as.data.frame(geral$perc)
   propresp = round(propresp, digits = 3)
 
+  if (GLOBAL_Dados$tipo == "D")  propresp = propresp[,-ncol(propresp)]
+  
   alfacronbach = as.data.frame(geral$alpha)
   alfacronbach = round(alfacronbach, digits = 3)
   
@@ -23,35 +25,44 @@ calculadescritivas = function(banco){
 }
  
 
-verificaunidimen = function(banco){
+verificaunidimen = function(banco,
+                            nomex = VERIFICA_UNID_X, nomey = VERIFICA_UNID_Y){
 
-  if (GLOBAL_Dados$tipo == "N") tipo = " indefinido "
-  if (GLOBAL_Dados$tipo == "D") tipo = " dicotômicos "
-  if (GLOBAL_Dados$tipo == "P") tipo = " politômicos "
-  
   if (GLOBAL_Dados$tipo == "D") {   
     correlacao       = tetrachoric(banco)
-    matrizcorrelacao = "tetracorica"
-    tiporesposta     = "dicotomicas binarias"
+    matrizcorrelacao = VERIFICA_UNID_TETRACORICA
+    tiporesposta     = VERIFICA_UNID_DICOT
   }else{
     correlacao       = polychoric(banco)
-    matrizcorrelacao = "policorica"
-    tiporesposta     = "politomicas ordinais"
+    matrizcorrelacao = VERIFICA_UNID_POLICORICA
+    tiporesposta     = VERIFICA_UNID_DICOT
   }
   propexp = round(eigen(correlacao$rho)$values/
                     sum(eigen(correlacao$rho)$values), digits = 3)
-  propexp[1] = propexp[1]*100
-  if(propexp[1]>=20){
-        paramParaTexto = list(matrizcorrelacao, tiporesposta, propexp[1]," ",     "maior") }
-  else{ paramParaTexto = list(matrizcorrelacao, tiporesposta, propexp[1]," nao ", "menor") }
-  return(paramParaTexto)
   
+  # gráfico
+  df =  data.frame(x = 1:ncol(banco), y = propexp)
+  graficoscree = df %>% 
+    plot_ly(x = ~x, y = ~y,  
+            type = "scatter", mode = 'lines+markers',
+            hovertemplate = paste('<b>Fator:</b> %{x}',
+                                  '<br><b>',VERIFICA_HOVER,':</b> %{y:.3f}<extra></extra>')) %>% 
+    layout(xaxis = list(title=nomex,  showgrid=T, zeroline=F, linecolor="gray", linewidth=1.5, mirror=T),
+           yaxis = list(title=nomey,  showgrid=T, zeroline=F, linecolor="gray", linewidth=1.5, mirror=T),
+           showlegend = FALSE)
+  
+  proptexto = propexp[1]*100
+  if(proptexto>=20)
+    paramParaTexto= list(matrizcorrelacao, tiporesposta, proptexto," ",     "maior","SUPOSICAO_SIM", graficoscree) 
+  else 
+    paramParaTexto= list(matrizcorrelacao, tiporesposta, proptexto," nao ", "menor","SUPOSICAO_NAO", graficoscree)
+  return(paramParaTexto)
 }
 
 
 verificadiflog = function(banco, grupo, tipodiflog, correcaodiflog,
                           nomex = VERIFICA_DIF_LOG_X, nomey = VERIFICA_DIF_LOG_Y,
-                          focal = "Focal", referencia = "Referencia"){  
+                          focal = PLOT_FOCAL, referencia = PLOT_REFERENCIA){  
   nomesitens = colnames(banco)
   resultado = difLogistic(banco, group=grupo, focal.name = 1, type = tipodiflog, p.adjust.method = correcaodiflog)
   tabeladif = data.frame(resultado$Logistik, valorp = resultado$adjusted.p, resultado$deltaR2,
@@ -112,8 +123,8 @@ verificadiflog = function(banco, grupo, tipodiflog, correcaodiflog,
     
     graficodif = plotly::subplot(curvas, nrows = linhas, margin=0.03)
   }
-  #mensagem para a interface  
-  Mens <- str_glue(TEXTO_SIM_DIFLOG, ITENS=paste(itensdif, collapse = ","))
+  # mensagem para a interface  
+  Mens <- str_glue(TEXTO_SIM_DIFLOG, ITENS=paste("I",itensdif, collapse = ", ", sep=""))
   if (is.null(itensdif)) Mens <- TEXTO_NAO_DIFLOG  
   saida = list(itensdif, tabeladifarred, graficodif, Mens, graficossave)
   saida
@@ -172,26 +183,26 @@ verificadiflord = function(banco, grupo, modelo, correcaodiflord,
       if(modelo=="1PL"){
         df1 =  data.frame(x = score,
                           y = exp(score-tabeladif[j,3])/(1+exp(score-tabeladif[j,3])),
-                          grupo = rep("Referencia", 500))
+                          grupo = rep(PLOT_REFERENCIA, 500))
         df2 =  data.frame(x = score,
                           y = exp(score-tabeladif[j,5])/(1+exp(score-tabeladif[j,5])),
-                          grupo = rep("Focal", 500))
+                          grupo = rep(PLOT_FOCAL, 500))
       }else if(modelo=="2PL"){
         df1 =  data.frame(x = score,
                           y = exp(tabeladif[j,3]*(score-tabeladif[j,5]))/(1+exp(tabeladif[j,3]*(score-tabeladif[j,5]))),
-                          grupo = rep("Referencia", 500))
+                          grupo = rep(PLOT_REFERENCIA, 500))
         df2 =  data.frame(x = score,
                           y = exp(tabeladif[j,7]*(score-tabeladif[j,9]))/(1+exp(tabeladif[j,7]*(score-tabeladif[j,9]))),
-                          grupo = rep("Focal", 500))
+                          grupo = rep(PLOT_FOCAL, 500))
       }else{
         df1 =  data.frame(x = score,
                           y = tabeladif[j,11] + (1 - tabeladif[j,11])*
                             (exp(tabeladif[j,3]*(score-tabeladif[j,5]))/(1+exp(tabeladif[j,3]*(score-tabeladif[j,5])))),
-                          grupo = rep("Referencia", 500))
+                          grupo = rep(PLOT_REFERENCIA, 500))
         df2 =  data.frame(x = score,
                           y = tabeladif[j,11] + (1 - tabeladif[j,11])*
                             (exp(tabeladif[j,7]*(score-tabeladif[j,9]))/(1+exp(tabeladif[j,7]*(score-tabeladif[j,9])))),
-                          grupo = rep("Focal", 500))
+                          grupo = rep(PLOT_FOCAL, 500))
       }
       df3 = rbind(df1, df2)
       
@@ -211,7 +222,7 @@ verificadiflord = function(banco, grupo, modelo, correcaodiflord,
     graficodif = plotly::subplot(curvas, nrows = linhas, margin=0.03)
     
     # mensagem para a interface  
-    Mens <- str_glue(TEXTO_SIM_DIFLOG, ITENS=paste(itensdif, collapse = ","))
+    Mens <- str_glue(TEXTO_SIM_DIFLOG, ITENS=paste("I",itensdif, collapse = ", ", sep=""))
     if (is.null(itensdif)) Mens <- TEXTO_NAO_DIFLOG  
     
     saida = list(itensdif, tabeladifarred, graficodif, Mens)
@@ -238,7 +249,7 @@ verificadifcumlogit = function(banco, grupo, tipodifcumlogit, correcaodifcumlogi
   }else{
     
     nomesitens = colnames(banco)
-    Mens = str_glue(TEXTO_SIM_DIFLOG, ITENS=paste(itensdif, collapse = ","))
+    Mens = str_glue(TEXTO_SIM_DIFLOG, ITENS=paste("I",itensdif, collapse = ", ", sep=""))
     coefsdata = coef(resultado, SE = TRUE, simplify = TRUE)
     coefs = coefsdata[c(TRUE, FALSE), ]
     ses = coefsdata[c(FALSE, TRUE), ]
@@ -293,8 +304,8 @@ verificadifcumlogit = function(banco, grupo, tipodifcumlogit, correcaodifcumlogi
         text <- gsub(paste(c("[(]", "[)]"), collapse = "|"), "", text)
         text <- gsub(" PY = ", " ", text)
         text <- lapply(ifelse(g2$x$data[[k]]$line$dash =="dash",
-                              "Grupo: Focal<br />",
-                              "Grupo: Referencia<br />"), paste, sep = "", text)[[1]]
+                              paste0("Grupo: ",PLOT_FOCAL,"<br />"),
+                              paste0("Grupo: ",PLOT_REFERENCIA,"<br />")), paste, sep = "", text)[[1]]
         text <- lapply(strsplit(text, split = "<br />"), unique)
         text <- lapply(text, strtrim, width = c(17, 12,21,20))
         
@@ -429,7 +440,7 @@ tabulahabilidades = function(modelo, banco){
   escorepadronizado = scale(escoreacertos)
   habilidades =  fscores(modelo, full.scores.SE = TRUE)
   tabela = data.frame(escoreacertos, escorepadronizado, habilidades)
-  colnames(tabela) <- c("Escore Total", "Escore Padronizado", "Escore Tri", "EP(Escore Tri)")
+  colnames(tabela) <- c("Escore Total", "Escore Padronizado", "Escore TRI", "EP(Escore TRI)")
   rownames(tabela) <- paste("Respondente", 1:nrow(tabela))
   tabela = round(tabela, digits = 3)
   tabela
@@ -724,6 +735,13 @@ semAcentos <- function(argString) {
   iconv(argString, from="UTF-8", to = "ASCII//TRANSLIT")
 }
 
+formata <- function(argValores, argDecimais) {
+  argValores %>%
+    round(digits = argDecimais) %>%
+    format(nsmall = argDecimais, decimal.mark=".") %>%
+    as.numeric()
+}
+
 # Retira a coluna "Grupo" do DF
 extraiGrupo <- function (DF) {
   banco = DF
@@ -746,20 +764,22 @@ verificaDicotPolit <- function(df) {
   return(status)
 }
 
+
+
 # Cores e textos para as caixinhas ValueBox
 parametrosValueBox <- function() {
   req(GLOBAL_Dados$tipo)
   tipo = ""
   if (GLOBAL_Dados$tipo == "N") {
-    tipo = " indefinido "
+    tipo = DADOS_INDEFINIDO
     cor  = "black"
   }
   if (GLOBAL_Dados$tipo == "D") { 
-    tipo = " dicotomicos "
+    tipo = DADOS_DICOTOMICOS
     cor  = "yellow"
   }
   if (GLOBAL_Dados$tipo == "P") {
-    tipo = " politomicos "
+    tipo = DADOS_POLITOMICOS
     cor  = "green"
   }
   return(list(tipo,cor))

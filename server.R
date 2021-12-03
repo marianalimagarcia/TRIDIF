@@ -1,9 +1,8 @@
 
 server <- function(input, output, session) { 
 
-  #----------------------------------------------------
-  # ENTRADA DE DADOS: upload UPLOAD de arquivo CSV
-  #----------------------------------------------------
+  # ENTRADA DE DADOS: upload UPLOAD de arquivo CSV ----
+
   observe({
      # upload do arquivo selecionado
      req(input$uiEntrada_file_dicot)
@@ -49,9 +48,9 @@ server <- function(input, output, session) {
      
   })
   
-  #----------------------------------------------------
-  # ENTRADA DE DADOS: Botão LIMPAR MATRIZ
-  #----------------------------------------------------
+  
+  # ENTRADA DE DADOS: Botão LIMPAR MATRIZ ----
+
   observeEvent(input$uiEntrada_btn_LimparAceEditor, {  
      shinyalert(title = MENS_ALERTA_LIMPAR, 
                 showConfirmButton=TRUE, confirmButtonText="Sim",
@@ -67,9 +66,7 @@ server <- function(input, output, session) {
      )
   })
 
-  #----------------------------------------------------
-  # ENTRADA DE DADOS: Botão CARREGAR EXEMPLO DICOT
-  #----------------------------------------------------
+  # ENTRADA DE DADOS: Botão CARREGAR EXEMPLO DICOT ----
   observeEvent(input$uiEntrada_btn_Carregar_Dicot_AceEditor, {  
     shinyalert(title = MENS_ALERTA_CARREGAR_DICOT, 
                showConfirmButton=TRUE, confirmButtonText="Sim",
@@ -86,9 +83,8 @@ server <- function(input, output, session) {
     )
   })
   
-  #----------------------------------------------------
-  # ENTRADA DE DADOS: Botão CARREGAR EXEMPLO POLIT
-  #----------------------------------------------------
+
+  # ENTRADA DE DADOS: Botão CARREGAR EXEMPLO POLIT ----
   observeEvent(input$uiEntrada_btn_Carregar_Polit_AceEditor, {  
     shinyalert(title = MENS_ALERTA_CARREGAR_POLIT, 
                showConfirmButton=TRUE, confirmButtonText="Sim",
@@ -104,9 +100,7 @@ server <- function(input, output, session) {
     )
   })
 
-  #---------------------------------------------------------
-  # ENTRADA DE DADOS: Botão VERIFICAR DADOS
-  #---------------------------------------------------------
+  # ENTRADA DE DADOS: Botão VERIFICAR DADOS ----
   observeEvent(input$uiEntrada_btn_Verificar_AceEditor, {  
 
     # 1ª verificacao: se é dicot ou polit
@@ -148,9 +142,7 @@ server <- function(input, output, session) {
   })
   
   
-  #----------------------------------------------------
-  # Caixa de informação
-  #----------------------------------------------------
+  # Caixa de informação ----
   output$uiEntrada_info_ace <- renderValueBox({
 
     # aproveitando o evento para desabilitar os botoes de download das imagens na Exportação
@@ -237,9 +229,8 @@ server <- function(input, output, session) {
   })  
   
   
-  #----------------------------------------------------
-  # ANALISES DESCRITIVAS: 
-  #----------------------------------------------------
+  
+  # ANALISES DESCRITIVAS:     ----
   descritivas <- reactive({
     DF <- read.csv(text=input$uiEntrada_ace_dicot, sep="\t")
     banco = extraiGrupo(DF)[[1]]
@@ -258,9 +249,8 @@ server <- function(input, output, session) {
   output$uiDesc_dt_Alfa      <- renderDataTable({ datatable(descritivas()[[4]],option=DT_TRADUZIDOS, editable=FALSE) })
   
 
-  #----------------------------------------------------
-  # UNIDIMENSIONALIDADE 
-  #----------------------------------------------------
+  
+  # UNIDIMENSIONALIDADE ----
   unidimen <- reactive({
     DF <- read.csv(text=input$uiEntrada_ace_dicot, sep="\t")
     banco = extraiGrupo(DF)[[1]]
@@ -271,11 +261,16 @@ server <- function(input, output, session) {
                                                    TR   = unidimen()[[2]],
                                                    PERC = unidimen()[[3]],
                                                    NAO  = unidimen()[[4]],
-                                                   MAIOR= unidimen()[[5]]) })  
+                                                   MAIOR= unidimen()[[5]]) }) 
+  output$uiUni_txt_Suposicao <- renderText ({ 
+    if (unidimen()[[6]]=="SUPOSICAO_NAO") return("Suposição não atendida") 
+    else                                  return("Suposição atendida")
+  })  
+  output$uiUni_grafico <- renderPlotly ({ unidimen()[[7]] })                                                       
+
   
-  #----------------------------------------------------
-  # PRESENÇA DE DIF - MÉTODO REGRESSAO LOGISTICA
-  #----------------------------------------------------
+
+  # PRESENÇA DE DIF - MÉTODO REGRESSAO LOGISTICA ----
   difLog <- reactive({
     
     mens = paste("Tipo:",input$uiDIFLog_rb_tipo,"- Método:",input$uiDIFLog_si_correcao,"...") 
@@ -304,14 +299,14 @@ server <- function(input, output, session) {
   })
   
   output$uiDIFLog_dt_Resultados <- renderDataTable({ datatable(difLog()[[2]],option=DT_TRADUZIDOS) })
-  output$uiDIFLog_txt_Texto1    <- renderText     ({           difLog()[[4]]  })                                                       
-  output$uiDIFLog_txt_Texto2    <- renderText     ({           difLog()[[4]]  })                                                       
-  output$uiDIFLog_Graficos      <- renderPlotly   ({           difLog()[[3]]  })                                                       
-  
-  
-  #----------------------------------------------------
-  # PRESENÇA DE DIF - MÉTODO DE LORD
-  #----------------------------------------------------
+  output$uiDIFLog_txt_Texto1    <- renderText     ({ paste0("Foram detectados os seguintes itens com funcionamento diferencial (DIF): ",difLog()[[4]]) })                                                       
+  output$uiDIFLog_txt_Texto2    <- renderText     ({ paste0("Foram detectados os seguintes itens com funcionamento diferencial (DIF): ",difLog()[[4]]) })                                                       
+  output$uiDIFLog_Graficos      <- renderPlotly   ({ difLog()[[3]]  })                                                       
+  output$uiR_NOME_ARQ_DIF_LOGISTIC <- renderText  ({ str_glue(includeText(NOME_ARQ_DIF_LOGISTIC),
+                                                                 TYPE  =input$uiDIFLog_rb_tipo, 
+                                                                 METODO=input$uiDIFLog_si_correcao) })
+
+  # PRESENÇA DE DIF - MÉTODO DE LORD ----
   difLord <- reactive({
     
     mens = paste("Modelo:",input$uiDIFLord_rb_modelo,"- Correção:",input$uiDIFLord_si_correcao,"...") 
@@ -340,13 +335,16 @@ server <- function(input, output, session) {
     
   })
   output$uiDIFLord_dt_Resultados <- renderDataTable({ datatable(difLord()[[2]],option=DT_TRADUZIDOS) })
-  output$uiDIFLord_txt_Texto1     <- renderText ({           difLord()[[4]]  })                                                       
-  output$uiDIFLord_txt_Texto2     <- renderText ({           difLord()[[4]]  })                                                       
-  output$uiDIFLord_Graficos       <- renderPlotly ({         difLord()[[3]]  })                                                       
+  output$uiDIFLord_txt_Texto1    <- renderText     ({ paste0("Foram detectados os seguintes itens com funcionamento diferencial (DIF): ",difLord()[[4]]) })                                                       
+  output$uiDIFLord_txt_Texto2    <- renderText     ({ paste0("Foram detectados os seguintes itens com funcionamento diferencial (DIF): ",difLord()[[4]]) })                                                       
+  output$uiDIFLord_Graficos      <- renderPlotly   ({ difLord()[[3]]  })      
+  output$uiR_NOME_ARQ_DIF_LORD   <- renderText     ({ str_glue(includeText(NOME_ARQ_DIF_LORD),
+                                                               MODELO=input$uiDIFLord_rb_modelo, 
+                                                               METODO=input$uiDIFLord_si_correcao) })
+
   
-  #----------------------------------------------------
-  # PRESENÇA DE DIF - MÉTODO LOGIT CUMULATIVO
-  #----------------------------------------------------
+
+  # PRESENÇA DE DIF - MÉTODO LOGIT CUMULATIVO ----
   difLogit <- reactive({
     
     mens = paste("Tipo:",input$uiDIFLogit_rb_tipo,"- Método:",input$uiDIFLogit_si_correcao,"...") 
@@ -377,13 +375,14 @@ server <- function(input, output, session) {
   })
   
   output$uiDIFLogit_dt_Resultados <- renderDataTable({ datatable(difLogit()[[2]],option=DT_TRADUZIDOS) })
-  output$uiDIFLogit_txt_Texto1    <- renderText     ({           difLogit()[[4]]  })                                                       
-  output$uiDIFLogit_txt_Texto2    <- renderText     ({           difLogit()[[4]]  })                                                       
-  output$uiDIFLogit_Graficos      <- renderPlotly   ({           difLogit()[[3]]  })                                                       
-  
-  #----------------------------------------------------
-  # PRESENÇA DE DIF - MÉTODO LOGIT ADJACENTE
-  #----------------------------------------------------
+  output$uiDIFLogit_txt_Texto1    <- renderText     ({ paste0("Foram detectados os seguintes itens com funcionamento diferencial (DIF): ",difLogit()[[4]])  })                                                       
+  output$uiDIFLogit_txt_Texto2    <- renderText     ({ paste0("Foram detectados os seguintes itens com funcionamento diferencial (DIF): ",difLogit()[[4]])  })                                                       
+  output$uiDIFLogit_Graficos      <- renderPlotly   ({ difLogit()[[3]]  })                                                       
+  output$uiR_NOME_ARQ_DIF_LOGIT   <- renderText     ({ str_glue(includeText(NOME_ARQ_DIF_LOGIT),
+                                                                TYPE  =input$uiDIFLogit_rb_tipo, 
+                                                                METODO=input$uiDIFLogit_si_correcao) })
+
+  # PRESENÇA DE DIF - MÉTODO LOGIT ADJACENTE ----
   difLogitAdj <- reactive({
     
     mens = paste("Tipo:",input$uiDIFLogitAdj_rb_tipo,"- Método:",input$uiDIFLogitAdj_si_correcao,"...") 
@@ -414,14 +413,14 @@ server <- function(input, output, session) {
   })
   
   output$uiDIFLogitAdj_dt_Resultados <- renderDataTable({ datatable(difLogitAdj()[[2]],option=DT_TRADUZIDOS) })
-  output$uiDIFLogitAdj_txt_Texto1    <- renderText     ({           difLogitAdj()[[4]]  })                                                       
-  output$uiDIFLogitAdj_txt_Texto2    <- renderText     ({           difLogitAdj()[[4]]  })                                                       
-  output$uiDIFLogitAdj_Graficos      <- renderPlotly   ({           difLogitAdj()[[3]]  })                                                       
+  output$uiDIFLogitAdj_txt_Texto1    <- renderText     ({ paste0("Foram detectados os seguintes itens com funcionamento diferencial (DIF): ",difLogitAdj()[[4]])  })                                                       
+  output$uiDIFLogitAdj_txt_Texto2    <- renderText     ({ paste0("Foram detectados os seguintes itens com funcionamento diferencial (DIF): ",difLogitAdj()[[4]])  })                                                       
+  output$uiDIFLogitAdj_Graficos      <- renderPlotly   ({ difLogitAdj()[[3]]  })                                                       
+  output$uiR_NOME_ARQ_DIF_LOGIT_ADJ  <- renderText     ({ str_glue(includeText(NOME_ARQ_DIF_LOGIT_ADJ),
+                                                                   TYPE  =input$uiDIFLogitAdj_rb_tipo, 
+                                                                   METODO=input$uiDIFLogitAdj_si_correcao) })
   
-  
-  #----------------------------------------------------
-  # AJUSTE DO MODELO DICOTOMICO
-  #----------------------------------------------------
+  # AJUSTE DO MODELO DICOTOMICO ----
   resultmodelo_Dicot <- reactive({
     
     mens = paste("Modelo:",input$uiMod_Dicot_rb_modelo,"...") 
@@ -546,13 +545,76 @@ server <- function(input, output, session) {
     
   })
   
-  output$uiMod_Dicot_txt_Texto1      <- renderText ({ if (difLog()[[4]]  != "") paste0("Pelo método de regressão logística: ",difLog()[[4]]) })                                                       
-  output$uiMod_Dicot_txt_Texto2      <- renderText ({ if (difLord()[[4]] != "") paste0("Pelo método de Lord: ",difLord()[[4]]) })   
-  output$uiMod_Dicot_dt_Habilidades  <- renderDataTable({ datatable(resultmodelo_Dicot()[[1]],option=DT_TRADUZIDOS) })
+  output$uiMod_Dicot_txt_Titulo     <- renderText ({ "Foram detectados os seguintes itens com funcionamento diferencial (DIF):" })                                                       
+  output$uiMod_Dicot_txt_Texto1     <- renderText ({ if (difLog()[[4]]  != "") paste0("- Pelo método de regressão logística: ",difLog()[[4]]) })                                                       
+  output$uiMod_Dicot_txt_Texto2     <- renderText ({ if (difLord()[[4]] != "") paste0("- Pelo método de Lord: ",difLord()[[4]]) })   
+  output$uiMod_Dicot_dt_Habilidades <- renderDataTable({ datatable(resultmodelo_Dicot()[[1]],option=DT_TRADUZIDOS) })
+  output$uiMod_Dicot_Titulo         <- renderText ({ "Medidas de ajuste do modelo" })
+  output$uiMod_Dicot_Medida1        <- renderText ({ paste0("log-likehood: ",formata(GLOBAL_CALCULO_MOD$modelo@Fit$logLik,3)) })
+  output$uiMod_Dicot_Medida2        <- renderText ({ paste0("AIC: ",         formata(GLOBAL_CALCULO_MOD$modelo@Fit$AIC,3))    })
+  output$uiMod_Dicot_Medida3        <- renderText ({ paste0("AICc: ",        formata(GLOBAL_CALCULO_MOD$modelo@Fit$AICc,3))   })
+  output$uiMod_Dicot_Medida4        <- renderText ({ paste0("BIC: ",         formata(GLOBAL_CALCULO_MOD$modelo@Fit$BIC,3))    })
+  output$uiR_NOME_ARQ_CALC_DICOT    <- renderText ({ str_glue(includeText(NOME_ARQ_CALC_DICOT),
+                                                              MODELO=input$uiMod_Dicot_rb_modelo)  })
+  
+  # download ajuste modelo dicot ----
+  output$uiMod_Dicot_btn_Download <- downloadHandler(
+    filename = function() { ARQ_EXP_CALC_XLSX },
+    content  = function(file) {
 
-  #----------------------------------------------------
-  # AJUSTE DO MODELO POLITOMICO
-  #----------------------------------------------------
+      # dados do ajuste
+      dfdados <- data.frame(Campo=character(),Valor=character())
+      dfdados <- rbind(dfdados,data.frame(Campo="", Valor=""))
+      dfdados <- rbind(dfdados,data.frame(Campo="Dados:", Valor=trimws(parametrosValueBox()[[1]])))
+      dfdados <- rbind(dfdados,data.frame(Campo="", Valor=""))
+      dfdados <- rbind(dfdados,data.frame(Campo="Foram detectados os seguintes itens com funcionamento diferencial (DIF):", Valor=""))
+      if (GLOBAL_Dados$tipo == "D") { 
+        if (difLog()[[4]]  != "") dfdados <- rbind(dfdados,data.frame(Campo="Pelo método de regressão logística:", Valor=difLog()[[4]]))
+        if (difLord()[[4]] != "") dfdados <- rbind(dfdados,data.frame(Campo="Pelo método de Lord:", Valor=difLord()[[4]]))
+        dfdados <- rbind(dfdados,data.frame(Campo="", Valor=""))
+        dfdados <- rbind(dfdados,data.frame(Campo="Modelo:",Valor=retornaModeloDicot(input$uiMod_Dicot_rb_modelo)))
+      }
+      if (GLOBAL_Dados$tipo == "P") { 
+        if (difLogit()[[4]]    != "") dfdados <- rbind(dfdados,data.frame(Campo="Pelo Logit cumulativo:", Valor=difLogit()[[4]]))
+        if (difLogitAdj()[[4]] != "") dfdados <- rbind(dfdados,data.frame(Campo="Pelo Logit adjacente:",  Valor=difLogitAdj()[[4]]))
+        dfdados <- rbind(dfdados,data.frame(Campo="", Valor=""))
+        dfdados <- rbind(dfdados,data.frame(Campo="Modelo:",Valor=retornaModeloPolit(input$uiMod_Polit_rb_modelo)))
+      }
+      dfdados <- rbind(dfdados,data.frame(Campo="Medidas do ajuste do modelo:", Valor=""))
+      dfdados <- rbind(dfdados,data.frame(Campo="log-likehood:", Valor=formata(GLOBAL_CALCULO_MOD$modelo@Fit$logLik,3)))
+      dfdados <- rbind(dfdados,data.frame(Campo="AIC:",          Valor=formata(GLOBAL_CALCULO_MOD$modelo@Fit$AIC,3)))
+      dfdados <- rbind(dfdados,data.frame(Campo="AICc:",         Valor=formata(GLOBAL_CALCULO_MOD$modelo@Fit$AICc,3)))
+      dfdados <- rbind(dfdados,data.frame(Campo="BIC:",          Valor=formata(GLOBAL_CALCULO_MOD$modelo@Fit$BIC,3)))
+      write.xlsx(dfdados,file,sheetName="Ajuste do modelo", append=F, col.names=F, row.names=F)
+      
+      # prepara e grava os dados do Traço Latente
+      MatDicot = read.csv(text=input$uiEntrada_ace_dicot, sep="\t")
+      DF       = cbind(MatDicot,GLOBAL_CALCULO_TL$dados)
+      write.xlsx(DF,file,sheetName="Traços latentes", append=T)
+
+      # grava os dados dos coeficientes estimados
+      write.xlsx(GLOBAL_CALCULO_COEF$itens,file,sheetName="Coeficientes",append=T)
+    })
+  
+  retornaModeloDicot <- function(argModelo) {
+    if (argModelo=="Rasch") modeloDicot="RASCH"
+    if (argModelo=="1PL")   modeloDicot="Logístico de 1 parâmetro  (1PL)"
+    if (argModelo=="2PL")   modeloDicot="Logístico de 2 parâmetros (2PL)"
+    if (argModelo=="3PL")   modeloDicot="Logístico de 3 parâmetros (3PL)"
+    return(modeloDicot)
+  }
+  
+  retornaModeloPolit <- function(argModelo) {
+    if (argModelo=="graded")  modeloPolit="Politômico ordinal de resposta gradual (graded)" 
+    if (argModelo=="rsm")     modeloPolit="Escala gradual (rsm)"
+    if (argModelo=="Rasch")   modeloPolit="Crédito parcial (Rasch)"
+    if (argModelo=="gpcmIRT") modeloPolit="Crédito parcial generalizado (gpcmIRT)"
+    return(modeloPolit)
+  }
+  
+  
+  
+  # AJUSTE DO MODELO POLITOMICO ---- 
   resultmodelo_Polit <- reactive({
     
     mens = paste("Modelo:",input$uiMod_Polit_rb_modelo,"...") 
@@ -680,13 +742,62 @@ server <- function(input, output, session) {
     })
   })
   
-  output$uiMod_Polit_txt_Texto1 <- renderText ({ if (difLogit()[[4]]    != "") paste0("Pelo Logit cumulativo: ",difLogit()[[4]]) })                                                       
-  output$uiMod_Polit_txt_Texto2 <- renderText ({ if (difLogitAdj()[[4]] != "") paste0("Pelo Logit adjacente.: ",difLogitAdj()[[4]]) })
-  output$uiMod_Polit_dt_Habilidades  <- renderDataTable({ datatable(resultmodelo_Polit()[[1]],option=DT_TRADUZIDOS) })
+  output$uiMod_Polit_txt_Titulo     <- renderText ({ "Foram detectados os seguintes itens com funcionamento diferencial (DIF):" })                                                       
+  output$uiMod_Polit_txt_Texto1     <- renderText ({ if (difLogit()[[4]]    != "") paste0("Pelo Logit cumulativo: ",difLogit()[[4]]) })                                                       
+  output$uiMod_Polit_txt_Texto2     <- renderText ({ if (difLogitAdj()[[4]] != "") paste0("Pelo Logit adjacente: ", difLogitAdj()[[4]]) })
+  output$uiMod_Polit_dt_Habilidades <- renderDataTable({ datatable(resultmodelo_Polit()[[1]],option=DT_TRADUZIDOS) })
+  output$uiMod_Polit_Titulo         <- renderText ({ "Medidas de ajuste do modelo" })
+  output$uiMod_Polit_Medida1        <- renderText ({ paste0("log-likehood: ",formata(GLOBAL_CALCULO_MOD$modelo@Fit$logLik,3)) })
+  output$uiMod_Polit_Medida2        <- renderText ({ paste0("AIC: ",         formata(GLOBAL_CALCULO_MOD$modelo@Fit$AIC,3))    })
+  output$uiMod_Polit_Medida3        <- renderText ({ paste0("AICc: ",        formata(GLOBAL_CALCULO_MOD$modelo@Fit$AICc,3))   })
+  output$uiMod_Polit_Medida4        <- renderText ({ paste0("BIC: ",         formata(GLOBAL_CALCULO_MOD$modelo@Fit$BIC,3))    })
+  output$uiR_NOME_ARQ_CALC_POLIT    <- renderText ({ str_glue(includeText(NOME_ARQ_CALC_POLIT),
+                                                              MODELO=input$uiMod_Polit_rb_modelo) })
 
-  #----------------------------------------------------
-  # EXPORTACAO: tabelas
-  #----------------------------------------------------
+  # download ajuste modelo polit ----
+  output$uiMod_Polit_btn_Download <- downloadHandler(
+    filename = function() { ARQ_EXP_CALC_XLSX },
+    content  = function(file) {
+      
+      # dados do ajuste
+      dfdados <- data.frame(Campo=character(),Valor=character())
+      dfdados <- rbind(dfdados,data.frame(Campo="", Valor=""))
+      dfdados <- rbind(dfdados,data.frame(Campo="Dados:", Valor=trimws(parametrosValueBox()[[1]])))
+      dfdados <- rbind(dfdados,data.frame(Campo="", Valor=""))
+      dfdados <- rbind(dfdados,data.frame(Campo="Foram detectados os seguintes itens com funcionamento diferencial (DIF):", Valor=""))
+      if (GLOBAL_Dados$tipo == "D") { 
+        if (difLog()[[4]]  != "") dfdados <- rbind(dfdados,data.frame(Campo="Pelo método de regressão logística:", Valor=difLog()[[4]]))
+        if (difLord()[[4]] != "") dfdados <- rbind(dfdados,data.frame(Campo="Pelo método de Lord:", Valor=difLord()[[4]]))
+        dfdados <- rbind(dfdados,data.frame(Campo="", Valor=""))
+        dfdados <- rbind(dfdados,data.frame(Campo="Modelo:",Valor=retornaModeloDicot(input$uiMod_Dicot_rb_modelo)))
+      }
+      if (GLOBAL_Dados$tipo == "P") { 
+        if (difLogit()[[4]]    != "") dfdados <- rbind(dfdados,data.frame(Campo="Pelo Logit cumulativo:", Valor=difLogit()[[4]]))
+        if (difLogitAdj()[[4]] != "") dfdados <- rbind(dfdados,data.frame(Campo="Pelo Logit adjacente:",  Valor=difLogitAdj()[[4]]))
+        dfdados <- rbind(dfdados,data.frame(Campo="", Valor=""))
+        dfdados <- rbind(dfdados,data.frame(Campo="Modelo:",Valor=retornaModeloPolit(input$uiMod_Polit_rb_modelo)))
+      }
+      dfdados <- rbind(dfdados,data.frame(Campo="Medidas do ajuste do modelo:", Valor=""))
+      dfdados <- rbind(dfdados,data.frame(Campo="log-likehood:", Valor=formata(GLOBAL_CALCULO_MOD$modelo@Fit$logLik,3)))
+      dfdados <- rbind(dfdados,data.frame(Campo="AIC:",          Valor=formata(GLOBAL_CALCULO_MOD$modelo@Fit$AIC,3)))
+      dfdados <- rbind(dfdados,data.frame(Campo="AICc:",         Valor=formata(GLOBAL_CALCULO_MOD$modelo@Fit$AICc,3)))
+      dfdados <- rbind(dfdados,data.frame(Campo="BIC:",          Valor=formata(GLOBAL_CALCULO_MOD$modelo@Fit$BIC,3)))
+      write.xlsx(dfdados,file,sheetName="Ajuste do modelo", append=F, col.names=F, row.names=F)
+      
+      # prepara e grava os dados do Traço Latente
+      MatDicot = read.csv(text=input$uiEntrada_ace_dicot, sep="\t")
+      DF       = cbind(MatDicot,GLOBAL_CALCULO_TL$dados)
+      write.xlsx(DF,file,sheetName="Traços latentes", append=T)
+      
+      # grava os dados dos coeficientes estimados
+      write.xlsx(GLOBAL_CALCULO_COEF$itens,file,sheetName="Coeficientes",append=T)
+    })
+  
+  
+  
+  
+
+  # EXPORTACAO: tabelas ---- 
   exportacaoTxt <- reactive({
     
     # habilita/desabilita box das abas dos graficos
@@ -704,58 +815,66 @@ server <- function(input, output, session) {
     }
     
     # obtem a string do código selecionado no combo
-    if (input$uiMod_Dicot_rb_modelo=="Rasch") modeloDicot="RASCH"
-    if (input$uiMod_Dicot_rb_modelo=="1PL")   modeloDicot="Logístico de 1 parâmetro  (1PL)"
-    if (input$uiMod_Dicot_rb_modelo=="2PL")   modeloDicot="Logístico de 2 parâmetros (2PL)"
-    if (input$uiMod_Dicot_rb_modelo=="3PL")   modeloDicot="Logístico de 3 parâmetros (3PL)"
-    #
-    if (input$uiMod_Polit_rb_modelo=="graded")  modeloPolit="Politômico ordinal de resposta gradual (graded)" 
-    if (input$uiMod_Polit_rb_modelo=="rsm")     modeloPolit="Escala gradual (rsm)"
-    if (input$uiMod_Polit_rb_modelo=="Rasch")   modeloPolit="Crédito parcial (Rasch)"
-    if (input$uiMod_Polit_rb_modelo=="gpcmIRT") modeloPolit="Crédito parcial generalizado (gpcmIRT)"
+    modeloDicot = retornaModeloDicot(input$uiMod_Dicot_rb_modelo)
+    modeloPolit = retornaModeloPolit(input$uiMod_Polit_rb_modelo)
     
-    txt1 = "Após o ajuste do modelo { TIPO } '{ MODELO }', os dados da matriz de entrada são juntados às estimativas dos 
-           traços latentes dos respondentes e podem ser exportados num arquivo CSV para download aqui."
-    if (GLOBAL_Dados$tipo == "N") txt1 <- str_glue (txt1, TIPO="indefinido",         MODELO="??") 
-    if (GLOBAL_Dados$tipo == "D") txt1 <- str_glue (txt1, TIPO="dicotômico",         MODELO=modeloDicot)
-    if (GLOBAL_Dados$tipo == "P") txt1 <- str_glue (txt1, TIPO="politômico ordinal", MODELO=modeloPolit)
-    
-    txt2 = "Após o ajuste do modelo { TIPO } '{ MODELO }', os coeficientes estimados dos itens podem ser exportados num 
-    arquivo CSV para download aqui{ EXCLUIDOS }"
+    txt1 = "Após o ajuste do modelo { TIPO } '{ MODELO }', tanto os dados da matriz de entrada são juntados às estimativas dos 
+           traços latentes dos respondentes quanto os coeficientes estimados dos itens, podem ser exportados num arquivo XLSX{ EXCLUIDOS }"
     if (GLOBAL_Dados$tipo == "D") txtItens <- listaStr(input$uiMod_Dicot_si_itens)
     if (GLOBAL_Dados$tipo == "P") txtItens <- listaStr(input$uiMod_Polit_si_itens)
     if (txtItens == "") txtExclu <- "." else txtExclu <- paste0(", já excluídos os itens ",txtItens)
+    if (GLOBAL_Dados$tipo == "N") txt1 <- str_glue (txt1, TIPO="indefinido",         MODELO="??"       , EXCLUIDOS=txtExclu) 
+    if (GLOBAL_Dados$tipo == "D") txt1 <- str_glue (txt1, TIPO="dicotômico",         MODELO=modeloDicot, EXCLUIDOS=txtExclu)
+    if (GLOBAL_Dados$tipo == "P") txt1 <- str_glue (txt1, TIPO="politômico ordinal", MODELO=modeloPolit, EXCLUIDOS=txtExclu)
     
-    if (GLOBAL_Dados$tipo == "N") txt2 <- str_glue(txt2, TIPO="indefinido",         MODELO="??"       , EXCLUIDOS=txtExclu) 
-    if (GLOBAL_Dados$tipo == "D") txt2 <- str_glue(txt2, TIPO="dicotômico",         MODELO=modeloDicot, EXCLUIDOS=txtExclu)
-    if (GLOBAL_Dados$tipo == "P") txt2 <- str_glue(txt2, TIPO="politômico ordinal", MODELO=modeloPolit, EXCLUIDOS=txtExclu)
-    
-    return(list(txt1, txt2))
+    return(list(txt1))
   })
   output$uiExpTab_txt_Dados <- renderText({ exportacaoTxt()[[1]]  })
-  output$uiExpTab_txt_Itens <- renderText({ exportacaoTxt()[[2]]  })
-  
-  
+
+  # download exportação de tabelas ----
   output$uiExpTab_btn_TL <- downloadHandler(
-    filename = function() { ARQ_EXP_CALC_DADOS },
+    filename = function() { ARQ_EXP_CALC_XLSX },
     content  = function(file) {
+      
+      # dados do ajuste
+      dfdados <- data.frame(Campo=character(),Valor=character())
+      dfdados <- rbind(dfdados,data.frame(Campo="", Valor=""))
+      dfdados <- rbind(dfdados,data.frame(Campo="Dados:", Valor=trimws(parametrosValueBox()[[1]])))
+      dfdados <- rbind(dfdados,data.frame(Campo="", Valor=""))
+      dfdados <- rbind(dfdados,data.frame(Campo="Foram detectados os seguintes itens com funcionamento diferencial (DIF):", Valor=""))
+      if (GLOBAL_Dados$tipo == "D") { 
+        if (difLog()[[4]]  != "") dfdados <- rbind(dfdados,data.frame(Campo="Pelo método de regressão logística:", Valor=difLog()[[4]]))
+        if (difLord()[[4]] != "") dfdados <- rbind(dfdados,data.frame(Campo="Pelo método de Lord:", Valor=difLord()[[4]]))
+        dfdados <- rbind(dfdados,data.frame(Campo="", Valor=""))
+        dfdados <- rbind(dfdados,data.frame(Campo="Modelo:",Valor=retornaModeloDicot(input$uiMod_Dicot_rb_modelo)))
+      }
+      if (GLOBAL_Dados$tipo == "P") { 
+        if (difLogit()[[4]]    != "") dfdados <- rbind(dfdados,data.frame(Campo="Pelo Logit cumulativo:", Valor=difLogit()[[4]]))
+        if (difLogitAdj()[[4]] != "") dfdados <- rbind(dfdados,data.frame(Campo="Pelo Logit adjacente:",  Valor=difLogitAdj()[[4]]))
+        dfdados <- rbind(dfdados,data.frame(Campo="", Valor=""))
+        dfdados <- rbind(dfdados,data.frame(Campo="Modelo:",Valor=retornaModeloPolit(input$uiMod_Polit_rb_modelo)))
+      }
+      dfdados <- rbind(dfdados,data.frame(Campo="Medidas do ajuste do modelo:", Valor=""))
+      dfdados <- rbind(dfdados,data.frame(Campo="log-likehood:", Valor=formata(GLOBAL_CALCULO_MOD$modelo@Fit$logLik,3)))
+      dfdados <- rbind(dfdados,data.frame(Campo="AIC:",          Valor=formata(GLOBAL_CALCULO_MOD$modelo@Fit$AIC,3)))
+      dfdados <- rbind(dfdados,data.frame(Campo="AICc:",         Valor=formata(GLOBAL_CALCULO_MOD$modelo@Fit$AICc,3)))
+      dfdados <- rbind(dfdados,data.frame(Campo="BIC:",          Valor=formata(GLOBAL_CALCULO_MOD$modelo@Fit$BIC,3)))
+      write.xlsx(dfdados,file,sheetName="Ajuste do modelo", append=F, col.names=F, row.names=F)
+      
       # prepara e grava os dados do Traço Latente
       MatDicot = read.csv(text=input$uiEntrada_ace_dicot, sep="\t")
-      DF       = cbind(MatDicot,GLOBAL_CALCULO_TL$dados) 
-      write.csv(DF,file)
-  })
+      DF       = cbind(MatDicot,GLOBAL_CALCULO_TL$dados)
+      write.xlsx(DF,file,sheetName="Traços latentes", append=T)
+      
+      # grava os dados dos coeficientes estimados
+      write.xlsx(GLOBAL_CALCULO_COEF$itens,file,sheetName="Coeficientes",append=T)
+    })
 
-  output$uiExpTab_btn_COEF <- downloadHandler(
-    filename = function() { ARQ_EXP_CALC_ITENS },
-    content  = function(file) {
-      write.csv(GLOBAL_CALCULO_COEF$itens,file)
-  })
+  
 
-  #----------------------------------------------------
-  # EXPORTACAO: gráficos
-  #----------------------------------------------------
+  # EXPORTACAO: gráficos ----
 
-  # histograma
+  # exportação histograma ----
   #- - - - - - - - - - - - - - - - - - - - - - - - 
   observeEvent(input$uiExpGraf_btn_Hist_Aplicar, {
     # ajusta os argumentos da funcao
@@ -786,16 +905,8 @@ server <- function(input, output, session) {
       error = function(e) {})
     })
   })
-  output$uiExpGraf_btn_HIST_png <- downloadHandler(
-    filename=function()  { ARQ_EXP_CALC_HIST_PNG },
-    content =function(f) { export(GLOBAL_CALCULO_HIST_ALT$graf, file=f) }
-  )
-  output$uiExpGraf_btn_HIST_pdf <- downloadHandler(
-    filename=function()  { ARQ_EXP_CALC_HIST_PDF },
-    content =function(f) { export(GLOBAL_CALCULO_HIST_ALT$graf, file=f) }
-  )
-  
-  # boxPlot
+
+  # exportação boxPlot ----
   #- - - - - - - - - - - - - - - - - - - - - - - - 
   observeEvent(input$uiExpGraf_btn_Box_Aplicar, {
     # ajusta os argumentos da funcao
@@ -834,7 +945,7 @@ server <- function(input, output, session) {
     content =function(f) { export(GLOBAL_CALCULO_BOX_ALT$graf, file=f)}
   )
   
-  # modelo
+  # exportação modelo ----
   #- - - - - - - - - - - - - - - - - - - - - - - - 
   observeEvent(input$uiExpGraf_btn_cit_Aplicar, {
     # ajusta os argumentos da funcao
@@ -877,7 +988,7 @@ server <- function(input, output, session) {
     content =function(f) { export(GLOBAL_CALCULO_CIT_ALT$graf, file=f)}
   )
   
-  # curva caract dos itens - todas as curvas - Apenas DICOT tem
+  # exportação CCI - todas as curvas - Apenas DICOT tem ----
   #- - - - - - - - - - - - - - - - - - - - - - - - 
   observeEvent(input$uiExpGraf_btn_cciunica_Aplicar, {
       # ajusta os argumentos da funcao
@@ -916,7 +1027,7 @@ server <- function(input, output, session) {
     content =function(f) { export(GLOBAL_CALCULO_CCIU_ALT$graf, file=f)}
   )
   
-  # curva caract dos itens - escolher o item - do DICOT
+  # exportação CCI - escolher o item - do DICOT ----
   #- - - - - - - - - - - - - - - - - - - - - - - - 
   observeEvent(input$uiExpGraf_btn_cci_Aplicar_dicot, {
     # ajusta os argumentos da funcao
@@ -963,7 +1074,7 @@ server <- function(input, output, session) {
     content =function(f) { export(GLOBAL_CALCULO_CCI_ALT$graf, file=f)}
   )
 
-  # curva caract dos itens - escolher o item - do POLIT
+  # exportacao CCI - escolher o item - do POLIT ----
   #- - - - - - - - - - - - - - - - - - - - - - - - 
   observeEvent(input$uiExpGraf_btn_cci_Aplicar_polit, {
     # ajusta os argumentos da funcao
@@ -1010,7 +1121,7 @@ server <- function(input, output, session) {
   )
   
 
-  # curva info dos itens - todas as curvas - dicot
+  # exportacao CII - todas as curvas - dicot ----
   #- - - - - - - - - - - - - - - - - - - - - - - - 
   observeEvent(input$uiExpGraf_btn_ciiunica_Aplicar, {
     # ajusta os argumentos da funcao
@@ -1049,7 +1160,7 @@ server <- function(input, output, session) {
     content =function(f) { export(GLOBAL_CALCULO_CIIU_ALT$graf, file=f)}
   )
   
-  # curva info dos itens - escolher o item - do DICOT
+  # exportacao CII - escolher o item - do DICOT ----
   #- - - - - - - - - - - - - - - - - - - - - - - - 
   observeEvent(input$uiExpGraf_btn_cii_Aplicar_dicot, {
     # retorna o indice da opção do combo
@@ -1095,7 +1206,7 @@ server <- function(input, output, session) {
   )
 
   
-  # curva info dos itens - escolher o item - do Polit
+  # exportacao CII - escolher o item - do Polit ----
   #- - - - - - - - - - - - - - - - - - - - - - - - 
   observeEvent(input$uiExpGraf_btn_cii_Aplicar_polit, {
     # retorna o indice da opção do combo
@@ -1140,7 +1251,7 @@ server <- function(input, output, session) {
     content =function(f) { export(GLOBAL_CALCULO_CII_ALT$graf, file=f)}
   )
   
-  # curva info TOTAL dos itens - escolher o item - do Polit
+  # exportacao CII TOTAL - escolher o item - do Polit ----
   #- - - - - - - - - - - - - - - - - - - - - - - - 
   observeEvent(input$uiExpGraf_btn_cii_t_Aplicar_polit, {
     # retorna o indice da opção do combo
@@ -1186,7 +1297,7 @@ server <- function(input, output, session) {
   )
   
   
-  # curva info TOTAL dos itens - todas as curvas - do polit
+  # exportacao CII TOTAL - todas as curvas - do polit ----
   #- - - - - - - - - - - - - - - - - - - - - - - - 
   observeEvent(input$uiExpGraf_btn_ciiunica_polit_Aplicar, {
     # ajusta os argumentos da funcao

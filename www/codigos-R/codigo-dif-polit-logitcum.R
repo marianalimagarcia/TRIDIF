@@ -1,6 +1,6 @@
 library(difNLR)
 
-resultado = difORD(matriz, group=grupo, focal.name = 1, model = "cumulative", type = "both", match = "score", p.adjust.method = "none", parametrization = "classic")
+resultado = difORD(matriz, group=grupo, focal.name = 1, model = "cumulative", type = '{TYPE}', match = "score", p.adjust.method = '{METODO}', parametrization = "classic")
 
 #ajuste dos itens
 resultado

@@ -12,7 +12,7 @@ ui <-
                   ),
                   tags$li(class = "dropdown",
                           tags$style(HTML(GLOBAL_CSS_HEADER)),
-                          tags$a(href="ajuda-v.2.1.pdf", target="_blank",tags$h5("Ajuda"))
+                          tags$a(href="ajuda-v.2.2.pdf", target="_blank",tags$h5("Ajuda"))
                   )
   ),
 
@@ -26,7 +26,7 @@ ui <-
   dashboardBody( 
 
     useShinyjs(),
-    useShinyalert(),  # Set up shinyalert
+    useShinyalert(),  
 
     tags$style(HTML(GLOBAL_CSS_BODY)),
     tags$style(HTML(GLOBAL_CSS_NAVBAR)),
@@ -36,15 +36,15 @@ ui <-
     
     navbarPage(title="", id="tabsNavBar",
                
-      #=====================================================================
+      # Menu Entrada de dados ----
       tabPanel(title="Entrada de dados",
-      #=====================================================================
+               
         box(title="Matriz de dados", width=12, status=GLOBAL_COR_BOX, solidHeader=TRUE, collapsible=TRUE,
             column(width = 2, 
                    wellPanel(
-                     #p("Abaixo estão os dados de entrada."),
-                     tags$li("Pode ser usado o '",em("copia e cola"),"' de uma planilha"),
-                     tags$li("A coluna ",em(span("Grupo", style=DIV_DICOT))," deve ser a última coluna ")
+                     #tags$li("Pode ser usado o '",em("copia e cola"),"'"),
+                     tags$li("A coluna ",em(span("Grupo", style=DIV_DICOT))," deve ser a última coluna "),
+                     tags$li("Valores faltantes devem ser", em("vazio")," ou NA")
                    )
             ),
             column(width = 3,
@@ -53,7 +53,7 @@ ui <-
                                            "Ponto e vírgula" = ";",
                                            "Tab"             = "\t")
                             ),
-                   fileInput(inputId="uiEntrada_file_dicot", label="Selecione o arquivo CSV para upload", multiple= FALSE,
+                   fileInput(inputId="uiEntrada_file_dicot", label="Selecione o arquivo CSV para upload ou copie e cole direto na matriz", multiple= FALSE,
                              buttonLabel = "Escolha",
                              placeholder = "Nenhum arquivo selecionado",
                              accept      = c("text/csv","text/comma-separated-values,text/plain",".csv")
@@ -90,9 +90,9 @@ ui <-
       ), #tabPanel
       
 
-      #=====================================================================
+      # Menu Análises descritivas ----
       tabPanel(title="Análises descritivas",
-      #=====================================================================
+      
         box(title="Análises descritivas", width=12, status=GLOBAL_COR_BOX, solidHeader=TRUE, collapsible=TRUE,
             column(width = 4,valueBoxOutput("uiDesc_info_ace")),
             column(width = 8,wellPanel(div(style=DIV_MENSAGEM, width="100%", textOutput("uiDesc_txt_Texto")))),
@@ -132,14 +132,18 @@ ui <-
       ), #tabPanel
                
 
-      #=====================================================================
+      # Menu Unidimensionalidade ----
       tabPanel(title="Unidimensionalidade",
-      #=====================================================================
+
         box(title="Verificando a unidimensionalidade", width=12, status=GLOBAL_COR_BOX, solidHeader=TRUE, collapsible=TRUE,
             column(width = 4,valueBoxOutput("uiUni_info_ace")),
             column(width = 8,
-                   wellPanel(div(style=DIV_MENSAGEM, width="100%",textOutput("uiUni_txt_Texto")))
-            )
+                   wellPanel(div(style=DIV_SUPOSICAO, width="100%",textOutput("uiUni_txt_Suposicao")),
+                             div(style=DIV_MENSAGEM, width="100%",textOutput("uiUni_txt_Texto")))),
+            
+            column(width = 3,""),
+            column(width = 6,plotlyOutput("uiUni_grafico", height="100%")),
+            column(width = 3,"")
         ),
         box(title="Código R", width=12, status=GLOBAL_COR_BOX, solidHeader=TRUE, collapsible=TRUE,
             column(width = 12,
@@ -149,14 +153,12 @@ ui <-
       ), #tabPanel
       
 
-      #=====================================================================
-      tabPanel(title="Presença de DIF",  # dicotomico
-      #=====================================================================
+      # Menu Presença de DIF (dicot) ----
+      tabPanel(title="Presença de DIF",  
 
-               #------------------------------------------    
+               # Inicio DIF Log ----    
                box(title="Método de regressão logística ", width=12, status=GLOBAL_COR_BOX, solidHeader=TRUE, collapsible=TRUE,
-               #------------------------------------------    
-                   
+
                    column(width = 4,valueBoxOutput("uiDIFLog_info_ace")),
                    column(width = 4,
                           radioButtons(inputId="uiDIFLog_rb_tipo", label="Tipo de DIF", inline=TRUE, selected="both",
@@ -172,12 +174,12 @@ ui <-
                                                  "Holm"                = "holm",
                                                  "Hochberg"            = "hochberg",
                                                  "Hommel"              = "hommel",
-                                                 "Nenhum"             = "none"))
+                                                 "Nenhum"              = "none"))
                    ),
                          
-                   #--------------------------       
+                   # box detecção dos itens ----       
                    box(title="Detecção dos itens", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                   #--------------------------                       
+
                        column(width = 12,
                               tabBox(title=" ", width="100%",
                                      tabPanel("Tabela"," ",div(style=DIV_MENSAGEM,  width="100%",textOutput("uiDIFLog_txt_Texto1")),
@@ -188,9 +190,8 @@ ui <-
                         )
                    ),
 
-                   #--------------------------       
+                   # box análise gráfica ----       
                    box(title="Análise gráfica", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                   #--------------------------       
                        column(width = 12,
                               tabBox(title=" ", width="100%",
                                      tabPanel("Gráfico"," ",div(style=DIV_MENSAGEM, width="100%",textOutput("uiDIFLog_txt_Texto2")),
@@ -201,21 +202,17 @@ ui <-
                         )
                    ),
                          
-                   #--------------------------       
+                   # box código R ----       
                    box(title="Código R", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                   #--------------------------       
                        column(width = 12,
-                              wellPanel(p(""),code(style=ESTILO_CODIGO_R,includeText(NOME_ARQ_DIF_LOGISTIC)))
+                              wellPanel(p(""),code(style=ESTILO_CODIGO_R,textOutput("uiR_NOME_ARQ_DIF_LOGISTIC")))
                        )
                    )
-                   #--------------------------       
-               
-               ), #box método de regressão logística
 
-      
-               #------------------------------------------    
+               ), # Final DIF Log 
+
+               # Inicio DIF Lord ----    
                box(title="Método de Lord", width=12, status=GLOBAL_COR_BOX, solidHeader=TRUE, collapsible=TRUE,
-               #------------------------------------------    
                    column(width = 4,valueBoxOutput("uiDIFLord_info_ace")),
                    column(width = 4,
                           radioButtons(inputId="uiDIFLord_rb_modelo", label="Modelo", inline=TRUE, selected="2PL",
@@ -231,12 +228,11 @@ ui <-
                                                   "Holm"                = "holm",
                                                   "Hochberg"            = "hochberg",
                                                   "Hommel"              = "hommel",
-                                                  "Nenhum"             = "none"))
+                                                  "Nenhum"              = "none"))
                     ),
                          
-                    #--------------------------       
+                    # box detecção dos itens ----       
                     box(title="Detecção dos itens", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                    #--------------------------       
                         column(width = 12,
                                tabBox(title=" ", width="100%",
                                       tabPanel("Tabela"," ",div(style=DIV_MENSAGEM,  width="100%",textOutput("uiDIFLord_txt_Texto1")),
@@ -247,9 +243,8 @@ ui <-
                         )
                     ),
                          
-                    #--------------------------       
+                    # box análise gráfica ----      
                     box(title="Análise gráfica", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                    #--------------------------       
                         column(width = 12,
                                tabBox(title=" ", width="100%",
                                       tabPanel("Gráfico"," ",div(style=DIV_MENSAGEM, width="100%",textOutput("uiDIFLord_txt_Texto2")),
@@ -260,27 +255,23 @@ ui <-
                         )
                     ),
                          
-                    #--------------------------       
+                    # box código R ----       
                     box(title="Código R", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                    #--------------------------       
                         column(width = 12,
-                               wellPanel(p(""),code(style=ESTILO_CODIGO_R,includeText(NOME_ARQ_DIF_LORD)))
+                               wellPanel(p(""),code(style=ESTILO_CODIGO_R,textOutput("uiR_NOME_ARQ_DIF_LORD")))
                         )
                     )
-                    #------------------------------------------
-               
-               ) #box método de lord
+
+               ) # Final DIF Lord 
       
-      ), #tabpanel presença de dif (este é o DICOT)    
+      ), #tabpanel    
       
       
-      #=====================================================================
+      # Menu Presença de DIF (polit) ---- 
       tabPanel(title="Presença de DIF ",  # politomico. A DIFERENÇA COM O DICOT É UM ESPAÇO NO FINAL
-      #=====================================================================
-               
-               #------------------------------------------    
+
+               # Inicio DIF Logit Cumulativo ----    
                box(title="Logit cumulativo", width=12, status=GLOBAL_COR_BOX, solidHeader=TRUE, collapsible=TRUE,
-               #------------------------------------------    
                    column(width = 4,valueBoxOutput("uiDIFLogit_info_ace")),
                    column(width = 4,
                           radioButtons(inputId="uiDIFLogit_rb_tipo", label="Tipo de DIF", inline=TRUE, selected="both",
@@ -296,12 +287,11 @@ ui <-
                                                   "Holm"                = "holm",
                                                   "Hochberg"            = "hochberg",
                                                   "Hommel"              = "hommel",
-                                                  "Nenhum"             = "none"))
+                                                  "Nenhum"              = "none"))
                     ),
                          
-                    #--------------------------       
+                    # box detecção dos itens ----       
                     box(title="Detecção dos itens", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                    #--------------------------       
                         column(width = 12,
                                tabBox(title=" ", width="100%",
                                       tabPanel("Tabela"," ",div(style=DIV_MENSAGEM,  width="100%",textOutput("uiDIFLogit_txt_Texto1")),
@@ -312,9 +302,8 @@ ui <-
                         ) 
                     ),
                          
-                    #--------------------------       
+                    # box análise gráfica ----       
                     box(title="Análise gráfica", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                    #--------------------------       
                         column(width = 12,
                                tabBox(title=" ", width="100%",
                                       tabPanel("Gráfico"," ",div(style=DIV_MENSAGEM, width="100%",textOutput("uiDIFLogit_txt_Texto2")),
@@ -325,21 +314,18 @@ ui <-
                          )
                     ),
                          
-                    #--------------------------       
+                    # box código R ----       
                     box(title="Código R", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                    #--------------------------       
                         column(width = 12,
-                               wellPanel(p(""),code(style=ESTILO_CODIGO_R,includeText(NOME_ARQ_DIF_LOGIT)))
+                               wellPanel(p(""),code(style=ESTILO_CODIGO_R,textOutput("uiR_NOME_ARQ_DIF_LOGIT")))
                         )
                     )
-                    #------------------------------------------
-               
-                         
-               ), #box logit cumulativo
+
+               ), # Final DIF Logit Cumulativo
       
-               #------------------------------------------    
+               # Inicio DIF Logit Adjacente ----    
                box(title="Logit de categorias adjacentes", width=12, status=GLOBAL_COR_BOX, solidHeader=TRUE, collapsible=TRUE,
-               #------------------------------------------    
+    
                    column(width = 4,valueBoxOutput("uiDIFLogitAdj_info_ace")),
                    column(width = 4,
                           radioButtons(inputId="uiDIFLogitAdj_rb_tipo", label="Tipo de DIF", inline=TRUE, selected="both",
@@ -358,9 +344,8 @@ ui <-
                                                 "Nenhum"             = "none"))
                     ),
                     
-                    #--------------------------       
+                    # box detecção dos itens ----         
                     box(title="Detecção dos itens", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                    #--------------------------       
                         column(width = 12,
                                tabBox(title=" ", width="100%",
                                       tabPanel("Tabela"," ",div(style=DIV_MENSAGEM,  width="100%",textOutput("uiDIFLogitAdj_txt_Texto1")),
@@ -371,9 +356,8 @@ ui <-
                          )
                     ),
                          
-                    #--------------------------       
+                    # box análise gráfica ----       
                     box(title="Análise gráfica", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                    #--------------------------       
                         column(width = 12,
                                tabBox(title=" ", width="100%",
                                       tabPanel("Gráfico"," ",div(style=DIV_MENSAGEM, width="100%",textOutput("uiDIFLogitAdj_txt_Texto2")),
@@ -384,32 +368,39 @@ ui <-
                         )
                     ),
                          
-                    #--------------------------       
+                    # box código R ----
                     box(title="Código R", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                    #--------------------------       
                         column(width = 12,
-                               wellPanel(p(""),code(style=ESTILO_CODIGO_R,includeText(NOME_ARQ_DIF_LOGIT_ADJ)))
+                               wellPanel(p(""),code(style=ESTILO_CODIGO_R,textOutput("uiR_NOME_ARQ_DIF_LOGIT_ADJ")))
                         )
                     )
-                    #------------------------------------------
+                    
                
-               ) #box logit adjacente
+               ) # Final DIF Logit Adjacente
       
-      ), #tabpanel presença de dif (este é o POLIT)    
+      ), #tabpanel    
 
-      #=====================================================================
+      # Menu Ajuste do modelo (dicot) ----
       tabPanel(title="Ajuste do modelo",  # dicotomico
-      #=====================================================================
 
-               #------------------------------------------    
+               # box escolha de opções ----     
                box(title=" Ajuste do modelo ", width=12, status=GLOBAL_COR_BOX, solidHeader=TRUE, collapsible=TRUE,
-               #------------------------------------------    
-                   column(width = 4,valueBoxOutput("uiDicot_info_ace")),
+
+                   column(width = 4,
+                          wellPanel(valueBoxOutput("uiDicot_info_ace"),
+                                    div(textOutput("uiMod_Dicot_Titulo")), 
+                                    div(style=DIV_DICOT,textOutput("uiMod_Dicot_Medida1")),
+                                    div(style=DIV_DICOT,textOutput("uiMod_Dicot_Medida2")),
+                                    div(style=DIV_DICOT,textOutput("uiMod_Dicot_Medida3")),
+                                    div(style=DIV_DICOT,textOutput("uiMod_Dicot_Medida4"))
+                          )
+                   ),
                    column(width = 8,    
                           
                           column(width = 7,
-                                 wellPanel(div(style=DIV_MENSAGEM, width="100%",textOutput("uiMod_Dicot_txt_Texto1")),
-                                           div(style=DIV_MENSAGEM, width="100%",textOutput("uiMod_Dicot_txt_Texto2")),
+                                 wellPanel(div(textOutput("uiMod_Dicot_txt_Titulo")),
+                                           div(style=DIV_MENSAGEM, textOutput("uiMod_Dicot_txt_Texto1")),
+                                           div(style=DIV_MENSAGEM, textOutput("uiMod_Dicot_txt_Texto2")),
                                            br(),
                                            div(style=DIV_MENSAGEM, "Selecione os itens a serem EXCLUÍDOS do ajuste do modelo (clique no componente e selecione os itens)"),
                                            selectInput (inputId="uiMod_Dicot_si_itens", label=NULL, multiple = TRUE, choices=NULL)
@@ -422,14 +413,15 @@ ui <-
                                                          "Logístico de 1 parâmetro  (1PL)" = "1PL",
                                                          "Logístico de 2 parâmetros (2PL)" = "2PL",
                                                          "Logístico de 3 parâmetros (3PL)" = "3PL")),
-                                              actionButton(inputId="uiMod_Dicot_btn_Ajustar",  label=" Ajustar e mostrar gráficos ")
+                                           actionButton(inputId="uiMod_Dicot_btn_Ajustar",  label=" Ajustar e mostrar gráficos "),
+                                           tags$div(style=ESTILO_BOTAODOWNLOAD, title=MENS_BOTAODOWNLOAD_XLSX,
+                                                    downloadButton("uiMod_Dicot_btn_Download",label=" Download "))
                                  )
                           )
                    ), #column 8
 
-                          #--------------------------    
-                          box(title="Traços latentes", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                          #--------------------------    
+                   # box traços latentes ----    
+                   box(title="Traços latentes", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
                               column(width = 12,
                                      wellPanel(p(style=DIV_MENSAGEM, "Estimativas dos traços latentes dos respondentes"),
                                                tabBox(title=" ", width="100%",
@@ -457,7 +449,7 @@ ui <-
                               ),
 
                               column(width = 12, 
-                                     wellPanel(p(style=DIV_MENSAGEM, "Curva de Informação do modelo"),  
+                                     wellPanel(p(style=DIV_MENSAGEM, "Curva de informação do modelo"),  
                                                tabBox(title=" ", width="100%",
                                                       tabPanel("Gráfico"," ", plotlyOutput("uiMod_Dicot_py_cit", height="100%")),
                                                       tabPanel("Ajuda",  " ", AJUDA_DICOT_CIT() )
@@ -465,15 +457,13 @@ ui <-
                                      )
                               )
                            
-                          ), #box traços latentes
+                   ), # box traços latentes
                           
-                       
-                          #--------------------------    
-                          box(title="Itens do modelo", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                          #--------------------------    
-                              
+                   # box itens do modelo ----  
+                   box(title="Itens do modelo", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
+
                                column(width = 12,
-                                      wellPanel(p(style=DIV_MENSAGEM, "Coeficientes estimados dos Itens"),
+                                      wellPanel(p(style=DIV_MENSAGEM, "Coeficientes estimados dos itens"),
                                                 tabBox(title=" ", width="100%",
                                                        tabPanel("Tabela"," ",div(style=DIV_DATATABLE, width="100%", dataTableOutput("uiMod_Dicot_dt_Coeficientes"))),
                                                        tabPanel("Ajuda" ," ",AJUDA_DICOT_COEF() )
@@ -482,7 +472,7 @@ ui <-
                                ),                     
                            
                                column(width = 6, 
-                                      wellPanel(p(style=DIV_MENSAGEM, "Curva característica dos Itens"),
+                                      wellPanel(p(style=DIV_MENSAGEM, "Curva característica dos itens"),
                                                 tabBox(title=" ", width="100%",
                                                        tabPanel("Gráfico"," ",plotlyOutput("uiMod_Dicot_py_cciunica", height="100%")),
                                                        tabPanel("Ajuda"  ," ",AJUDA_DICOT_CCI() )
@@ -490,7 +480,7 @@ ui <-
                                       )
                                ),
                                column(width = 6, 
-                                      wellPanel(p(style=DIV_MENSAGEM, "Curva de Informação dos Itens"),
+                                      wellPanel(p(style=DIV_MENSAGEM, "Curva de informação dos itens"),
                                                 tabBox(title=" ", width="100%",
                                                        tabPanel("Gráfico"," ",plotlyOutput("uiMod_Dicot_py_ciiunica", height="100%")),
                                                        tabPanel("Ajuda"  ," ",AJUDA_DICOT_CII() )
@@ -499,7 +489,7 @@ ui <-
                                ),
                            
                                column(width = 6, 
-                                      wellPanel(p(style=DIV_MENSAGEM, "Curva característica dos Itens"),
+                                      wellPanel(p(style=DIV_MENSAGEM, "Curva característica dos itens"),
                                                 tabBox(title=" ", width="100%",
                                                        tabPanel("Gráfico"," ",plotlyOutput("uiMod_Dicot_py_ccimosaico", height="100%")),
                                                        tabPanel("Ajuda"  ," ",AJUDA_DICOT_CCI_MOS() )
@@ -507,7 +497,7 @@ ui <-
                                       )
                                ),
                                column(width = 6, 
-                                      wellPanel(p(style=DIV_MENSAGEM, "Curva de Informação dos Itens"),
+                                      wellPanel(p(style=DIV_MENSAGEM, "Curva de informação dos itens"),
                                                 tabBox(title=" ", width="100%",
                                                        tabPanel("Gráfico"," ",plotlyOutput("uiMod_Dicot_py_ciimosaico", height="100%")),
                                                        tabPanel("Ajuda"  ," ",AJUDA_DICOT_CII_MOS() )
@@ -515,36 +505,40 @@ ui <-
                                       )
                                )
                            
-                          ) #box itens do modelo
+                   ) # box itens do modelo
                           
-               ), #box calculo
+               ), # box escolha de opções
       
-               #------------------------------------------    
+               # box código R ----    
                box(title="Código R", width=12, status=GLOBAL_COR_BOX, solidHeader=TRUE, collapsible=TRUE,
-               #------------------------------------------    
                    column(width = 12,
-                          wellPanel(p(""),code(style=ESTILO_CODIGO_R,includeText(NOME_ARQ_CALC_DICOT)))
+                          wellPanel(p(""),code(style=ESTILO_CODIGO_R,textOutput("uiR_NOME_ARQ_CALC_DICOT")))
                    )
                )
-               #------------------------------------------
+
+      ), # box ajuste do modelo (este é o DICOT)
       
-      ), #tabpanel ajuste do modelo (este é o DICOT)
-      
-      
-      #=====================================================================
+      # Menu Ajuste do modelo (polit) ----
       tabPanel(title="Ajuste do modelo ", # politomico. A DIFERENÇA COM O DICOT É UM ESPAÇO NO FINAL
-      #=====================================================================
-      
-               #------------------------------------------    
+
+               # box escolha de opções ----    
                box(title=" Ajuste do modelo ", width=12, status=GLOBAL_COR_BOX, solidHeader=TRUE, collapsible=TRUE,
-               #------------------------------------------    
-                   column(width = 4, valueBoxOutput("uiPolit_info_ace")),
+                   column(width = 4,
+                          wellPanel(valueBoxOutput("uiPolit_info_ace"),
+                                    div(textOutput("uiMod_Polit_Titulo")), 
+                                    div(style=DIV_DICOT,textOutput("uiMod_Polit_Medida1")),
+                                    div(style=DIV_DICOT,textOutput("uiMod_Polit_Medida2")),
+                                    div(style=DIV_DICOT,textOutput("uiMod_Polit_Medida3")),
+                                    div(style=DIV_DICOT,textOutput("uiMod_Polit_Medida4"))
+                          )
+                   ),
+
                    column(width = 8,   
                           
                           column(width = 7,
-                                 wellPanel(div(style=DIV_MENSAGEM, width="100%",textOutput("uiMod_Polit_txt_Texto1")),
-                                           br(),
-                                           div(style=DIV_MENSAGEM, width="100%",textOutput("uiMod_Polit_txt_Texto2")),
+                                 wellPanel(div(textOutput("uiMod_Polit_txt_Titulo")),
+                                           div(style=DIV_MENSAGEM, textOutput("uiMod_Polit_txt_Texto1")),
+                                           div(style=DIV_MENSAGEM, textOutput("uiMod_Polit_txt_Texto2")),
                                            br(),
                                            div(style=DIV_MENSAGEM, "Selecione os itens a serem EXCLUÍDOS do ajuste do modelo (clique no componente e selecione os itens)"),
                                            selectInput (inputId="uiMod_Polit_si_itens",  label=NULL, multiple = TRUE, choices=NULL)
@@ -560,15 +554,16 @@ ui <-
                                                                    "Crédito parcial generalizado" = "gpcmIRT",
                                                                    "Escala gradual"               = "rsm"
                                                                  )),
-                                          actionButton(inputId="uiMod_Polit_btn_Ajustar", label=" Ajustar e mostrar gráficos ")
+                                           actionButton(inputId="uiMod_Polit_btn_Ajustar", label=" Ajustar e mostrar gráficos "),
+                                           tags$div(style=ESTILO_BOTAODOWNLOAD, title=MENS_BOTAODOWNLOAD_XLSX,
+                                                    downloadButton("uiMod_Polit_btn_Download",label=" Download "))
                                 )
                           )
                    ), #column 8    
 
-                          #--------------------------    
-                          box(title="Traços latentes", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                          #--------------------------
-                          
+                   # box traços latentes ----    
+                   box(title="Traços latentes", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
+
                               column(width = 12,
                                      wellPanel(
                                          p(style=DIV_MENSAGEM, "Estimativas dos traços latentes dos respondentes"),
@@ -600,98 +595,85 @@ ui <-
 
                               column(width = 12, 
                                      wellPanel(
-                                           p(style=DIV_MENSAGEM, "Curva de Informação do modelo"),  
+                                           p(style=DIV_MENSAGEM, "Curva de informação do modelo"),  
                                            tabBox(title=" ", width="100%",
                                                   tabPanel("Gráfico"," ", plotlyOutput("uiMod_Polit_py_cit", height="100%")),
                                                   tabPanel("Ajuda",  " ", AJUDA_POLIT_CIT() ) 
                                            )
                                          )
                               )
-                          ), #box traços latentes
+                   ), # box traços latentes
                         
+                   # box itens do modelo ----
+                   box(title="Itens do modelo", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
 
-                          #--------------------------
-                          box(title="Itens do modelo", width=12, status=GLOBAL_COR_SUBBOX, solidHeader=TRUE, collapsible=TRUE,
-                          #--------------------------
-                            
                               column(width = 12,
-                                     wellPanel(p(style=DIV_MENSAGEM, "Coeficientes estimados dos Itens"),
+                                     wellPanel(p(style=DIV_MENSAGEM, "Coeficientes estimados dos itens"),
                                                tabBox(title=" ", width="100%",
                                                       tabPanel("Tabela"," ",div(style=DIV_DATATABLE, width="100%", dataTableOutput("uiMod_Polit_dt_Coeficientes"))),
                                                       tabPanel("Ajuda" ," ",AJUDA_POLIT_COEF() ))
                                      )
                               ),                     
 
-                          
                               column(width = 12, 
-                                     wellPanel(p(style=DIV_MENSAGEM, "Curva de Informação Total dos Itens"),
+                                     wellPanel(p(style=DIV_MENSAGEM, "Curva de informação total dos itens"),
                                                tabBox(title=" ", width="100%",
                                                       tabPanel("Gráfico"," ",plotlyOutput("uiMod_Polit_py_ciiunica", height="100%")),
                                                       tabPanel("Ajuda"  ," ",AJUDA_POLIT_CII_T_TODOS() ) )
                                      )
                               ),
                           
-                          
-                          
                               column(width = 4, 
-                                     wellPanel(p(style=DIV_MENSAGEM, "Curva característica dos Itens"),
+                                     wellPanel(p(style=DIV_MENSAGEM, "Curva característica dos itens"),
                                                tabBox(title=" ", width="100%",
                                                       tabPanel("Gráfico"," ",plotlyOutput("uiMod_Polit_py_cci", height="100%")),
                                                       tabPanel("Ajuda"  ," ",AJUDA_POLIT_CCI() ))
                                      )
                               ),
                               column(width = 4, 
-                                     wellPanel(p(style=DIV_MENSAGEM, "Curva de Informação das categorias dos Itens"),
+                                     wellPanel(p(style=DIV_MENSAGEM, "Curva de informação das categorias dos itens"),
                                               tabBox(title=" ", width="100%",
                                                       tabPanel("Gráfico"," ",plotlyOutput("uiMod_Polit_py_cii", height="100%")),
                                                       tabPanel("Ajuda"  ," ",AJUDA_POLIT_CII() ))
                                      )
                               ),
                               column(width = 4, 
-                                     wellPanel(p(style=DIV_MENSAGEM, "Curva de Informação Total dos Itens"),
+                                     wellPanel(p(style=DIV_MENSAGEM, "Curva de informação total dos itens"),
                                                tabBox(title=" ", width="100%",
                                                        tabPanel("Gráfico"," ",plotlyOutput("uiMod_Polit_py_cii_t", height="100%")),
                                                        tabPanel("Ajuda"  ," ",AJUDA_POLIT_CII_T() ))
                                     )
                               )
                           
-                          ) #box itens do modelo
+                   ) # box itens do modelo
 
-               ), #box calculo
+               ), # box escolha de opções
                     
-               #------------------------------------------
+               # box código R ----
                box(title="Código R", width=12, status=GLOBAL_COR_BOX, solidHeader=TRUE, collapsible=TRUE,
-               #------------------------------------------
                    column(width = 12,
-                          wellPanel(p(""),code(style=ESTILO_CODIGO_R,includeText(NOME_ARQ_CALC_POLIT)))
+                          wellPanel(p(""),code(style=ESTILO_CODIGO_R,textOutput("uiR_NOME_ARQ_CALC_POLIT")))
                    )
                )
-               #------------------------------------------
 
       ), #tabpanel ajuste do modelo (este é o POLIT)
 
 
-      #=====================================================================
+      # Menu Exportação de Dados ----
       tabPanel(title="Exportação de dados",
-      #=====================================================================
-               #-------------------                     
+               
+               # box exportação de tabelas ----                    
                box(title="Exportação de tabelas de resultados", width=12, status=GLOBAL_COR_BOX, solidHeader=TRUE, collapsible=TRUE,
-               #-------------------                     
-
                    column(width = 12,
                           column(width=5, wellPanel(div(style=DIV_MENSAGEM, width="100%", textOutput("uiExpTab_txt_Dados")))),
                           column(width=3, downloadButton('uiExpTab_btn_TL', ' Download ')),
                           column(width=4, valueBoxOutput("uiExp_info_ace"))
-                    ),
-                   column(width = 12,
-                          column(width=5, wellPanel(div(style=DIV_MENSAGEM, width="100%",textOutput("uiExpTab_txt_Itens")))),
-                          column(width=3, downloadButton('uiExpTab_btn_COEF', ' Download '))
-                   )
+                    )
                ), # box exportacao de tabelas
                  
-               #-------------------                    
+               # box exportação de gráficos ----                  
                box(title="Exportação de gráficos", width=12, status=GLOBAL_COR_BOX, solidHeader=TRUE, collapsible=TRUE,
-               #-------------------                     
+                   
                    tabBox(title=" ", id="abasExportaGraficos" ,width="100%",
                           tabPanel("Histograma"," ",
                                   box(title=" ", width="100%",
@@ -837,16 +819,14 @@ ui <-
                      ) #tabBox
                ), # box exportacao de graficos
                
-               #-------------------                     
+               # box código R ----                     
                box(title="Código R", width=12, status=GLOBAL_COR_BOX, solidHeader=TRUE, collapsible=TRUE,
-               #-------------------                     
                    column(width = 12,
                           wellPanel(p(""),code(style=ESTILO_CODIGO_R,includeText(NOME_ARQ_EXPORTACAO)))
                    )
                )
-               #-------------------
-               
-      ) #tabPanel exportacao de dados
+
+      ) # tabPanel exportacao de dados
       
       
     ) #navbar Page
