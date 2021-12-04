@@ -1,0 +1,3 @@
+library(ltm)
+
+descript(matriz)

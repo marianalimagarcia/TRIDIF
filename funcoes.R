@@ -35,7 +35,7 @@ verificaunidimen = function(banco,
   }else{
     correlacao       = polychoric(banco)
     matrizcorrelacao = VERIFICA_UNID_POLICORICA
-    tiporesposta     = VERIFICA_UNID_DICOT
+    tiporesposta     = VERIFICA_UNID_POLIT
   }
   propexp = round(eigen(correlacao$rho)$values/
                     sum(eigen(correlacao$rho)$values), digits = 3)

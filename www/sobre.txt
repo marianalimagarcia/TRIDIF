@@ -1,0 +1,20 @@
+
+==============================
+TRIDIF versao 2.2 (04/12/2021)
+==============================
+
+Mariana Lima Garcia (marianalimagarcia@gmail.com)
+Instituto de Matematica e Estatistica (IME) da UFRGS
+Academica do curso de Estatistica
+
+Dra Stela Maris de Jezus Castro (stela.castro@ufrgs.br)
+Instituto de Matematica e Estatistica (IME) da UFRGS
+Orientadora
+
+Alexandre Vasconcelos Leite (alexandre.leite@ifrs.edu.br)
+Instituto Federal do Rio Grande do Sul (IFRS), campus Caxias do Sul
+Apoio tecnico
+
+-
+Download do projeto disponivel no repositorio publico do Github, em
+https://github.com/marianalimagarcia/TRIDIF

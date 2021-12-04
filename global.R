@@ -241,7 +241,7 @@ DADOS_INDEFINIDO  = "indefinido"
 VERIFICA_UNID_TETRACORICA = "tetracórica"
 VERIFICA_UNID_DICOT       = "dicotômicas binárias"
 VERIFICA_UNID_POLICORICA  = "policórica"
-VERIFICA_UNID_DICOT       = "politômicas ordinais"
+VERIFICA_UNID_POLIT       = "politômicas ordinais"
 
 PLOT_FOCAL      = "Focal"
 PLOT_REFERENCIA = "Referência"
@@ -259,7 +259,7 @@ VERIFICA_DIF_CUMLOGIT_X      = "Traço Latente"
 VERIFICA_DIF_CUMLOGIT_Y      = "Probabilidade"
 
 PLOTDISTHABILIDADADES_HIST_X = "Traço latente"   
-PLOTDISTHABILIDADADES_HIST_Y = "Frequencia"
+PLOTDISTHABILIDADADES_HIST_Y = "Frequência"
 PLOTDISTHABILIDADADES_BOX_X  = "Traço latente"   
 
 PLOTCURVASITENSDICOT_CCI_X   = "Traço Latente"
@@ -297,7 +297,10 @@ AJUDA_DESC_FALT <- function(){
 
 AJUDA_DESC_RESP <- function(){
   wp <- wellPanel(
-    p("Esta tabela mostra a proporção de respostas em cada categoria no item."),
+    p("Esta tabela mostra a proporção de respostas em cada categoria no item. 
+      Na imagem abaixo, para o item", strong("I1"),", 770 dos 1000 respondentes estão na categoria 0 (770/1000 = 0.77), 
+      125 estão na categoria 1 (125/1000 = 0.125), 71 na categoria 2 (71/1000 = 0.071) 
+      e 34 na categoria 3 (34/1000 = 0.034)."),
     br(),
     img(style=paste0(ESTILO_IMG, "width: 100%;"), src="imagens/proporcao_polit.png")
   )
